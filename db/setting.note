@@ -1,0 +1,17 @@
+파이썬
+
+가상환경 설정
+1: python 다운로드 후 설치 (원본 다운로드) => 복제
+   복제할 폴더를 생성, 생성된 폴더에 가서 python -m venv venv  (가상환경을 venv 폴더에 복사하는 것)
+   venv/scripts/activate 가상환경 활성화시킨 다음 개발
+
+   외부 라이브러리 다운로드
+   pip install 라이브러리명
+
+2: uv
+   uv add 라이브러리명
+   uv pip install 라이브러리명
+
+   uv pip install oracledb
+   uv pip install python-dotenv
+   up pip install faker

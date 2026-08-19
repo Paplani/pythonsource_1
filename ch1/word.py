@@ -83,4 +83,22 @@ else:
     result = "불합격"
 
 print(f"게임시간 : {end - start}, 정답개수 : {trueAnswer}, 합격여부 : {result}")
-        
+
+
+# db에 저장하는거 추가!
+import sqlite3
+
+conn = sqlite3.connect("../db/test.db", isolation_level = None)
+cursor = conn.cursor()
+
+sql = """create table if not exists records(corr_cnt integer, record text, regdate text)"""
+
+cursor.execute(sql)
+
+# insert 작업(기록 삽입)
+from datetime import datetime
+now =  datetime.now()
+nowDateTime = now.strftime("%Y-%m-%d %H:%M:%S")
+
+sql = "insert into records(corr_cnt, record, regdate) values(?,?,?)"
+cursor.execute(sql, (trueAnswer, et, nowDateTime))
