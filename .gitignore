@@ -3,6 +3,7 @@
 
 test.db
 .env
+.naver_session.json
 ### Python ###
 # Byte-compiled / optimized / DLL files
 __pycache__/
