@@ -19,6 +19,18 @@ headers = {
 # 주식 요청 url
 url = "http://finance.daum.net/api/search/ranks?limit=10"
 
+# URL
+#  ↓
+# Request 생성
+#  ↓
+# urlopen() → 서버에 요청
+#  ↓
+# read() → 응답 데이터 읽기 (bytes)
+#  ↓
+# decode() → 문자열(str)로 변환
+#  ↓
+# res
+
 # 요창
 res = req.urlopen(req.Request(url, headers=headers)).read().decode('utf-8')
 

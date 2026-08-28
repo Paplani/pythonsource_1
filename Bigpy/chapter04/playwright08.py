@@ -39,8 +39,8 @@ def crawl_wishket():
 
         #저장할 데이터 정리
         result = {
-            "수집일시": datetime.now().strftime("%Y-%m-%d %H-%M-%S"),
-            "등록된_프로젝트": registered_projects,
+            "수집일시": datetime.now().strftime("%Y-%m-%d %H-%M-%S"), 
+            "등록된_프로젝트": registered_projects, 
             "계약한_프로젝트": contracted_projects,
             "누적_완료_금액": completed_amount
         }
@@ -48,6 +48,7 @@ def crawl_wishket():
         # 1) 날짜별로 새 JSON 파일 저장
         today = datetime.now().strftime("%Y%m%d")
         save_path = Py_Scrap / "data" /f"wishket_{today}.json"
+        # 'w' 덮어쓰기 : 그날의 최신버전만 기록됨.
         with open(save_path, "w", encoding='utf-8') as f:
             json.dump(result, f, ensure_ascii=False, indent=2)     #indent = 2 : 들여쓰기 간격을 2로 설정
 

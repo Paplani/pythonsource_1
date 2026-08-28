@@ -17,6 +17,7 @@ with sync_playwright() as p:
     page.goto("https://search.naver.com/search.naver?sm=tab_hty.top&where=image&ssc=tab.image.all&query=%EB%A7%90%ED%8B%B0%ED%91%B8")
     page.wait_for_timeout(3000)
 
+    # query_selector_all 은 palywright의 메서드다.
     imgs = page.query_selector_all("img")
     print("찾은 img 개수 : ", len(imgs))
 
@@ -27,6 +28,7 @@ with sync_playwright() as p:
     # 우리는 그 렌더링 결과에 접근할 수 없고 주소 텍스트만 읽을 수 있다.
     img_urls = []
     for img in imgs:
+        # get_attribute 또한 palywright의 문법이다.
         src = img.get_attribute("src")
         # 검색 페이지는 src에 실제 주소 대신 data:image/...;base64,... 같은
         # 임시 placeholder를 넣어두기도 해서, 진짜 http(s) 주소만 걸러낸다.
