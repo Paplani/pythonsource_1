@@ -1,0 +1,1443 @@
+<title>파이썬 크롤링 필드노트</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@500;600;700&family=Gothic+A1:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --paper:#F1F3EF; --surface:#FFFFFF; --surface-2:#E7EBE4; --surface-3:#DEE4DA;
+    --ink:#1C231D; --ink-soft:#525E54; --ink-faint:#8A9689;
+    --line:#D7DED3;
+    --accent:#2F5FA8; --accent-soft:#E5EDF7; --accent-ink:#1F4A8C;
+    --warn:#A8461F; --warn-soft:#F7E9E2;
+    --ok:#3F7D52; --ok-soft:#E6F1E9;
+    --cat-data:#6B5B95; --cat-data-soft:#EEEBF5;
+    --cat-static:#2F5FA8; --cat-static-soft:#E5EDF7;
+    --cat-browser:#A8461F; --cat-browser-soft:#F7E9E2;
+    --cat-api:#9C6B14; --cat-api-soft:#F5EEDD;
+    --cat-example:#3F7D52; --cat-example-soft:#E6F1E9;
+    --cat-practice:#0E7A67; --cat-practice-soft:#DFF0EC;
+    --code-bg:#1B211C; --code-ink:#DCE4D8; --code-line:#2B342C; --code-label:#7C8B7A;
+    --code-k:#7EAAE0; --code-s:#D6A65E; --code-c:#6C8A6E; --code-fn:#C9A6E0; --code-n:#8FBE8F;
+    --shadow:0 1px 2px rgba(28,35,29,0.05), 0 6px 18px rgba(28,35,29,0.06);
+    --font-display:'Hahmlet', Georgia, 'Iowan Old Style', serif;
+    --font-body:'Gothic A1', -apple-system, 'Malgun Gothic', 'Segoe UI', sans-serif;
+    --font-mono:'JetBrains Mono', ui-monospace, Consolas, 'Liberation Mono', monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#12160F; --surface:#181D15; --surface-2:#1F251A; --surface-3:#272E20;
+      --ink:#E6EBE1; --ink-soft:#A9B5A3; --ink-faint:#6E7A69;
+      --line:#2B3327;
+      --accent:#7FADE8; --accent-soft:#1E2C40; --accent-ink:#9CC0F0;
+      --warn:#E08A5E; --warn-soft:#3A241A;
+      --ok:#82C398; --ok-soft:#1C2E20;
+      --cat-data:#B3A4DD; --cat-data-soft:#28223A;
+      --cat-static:#7FADE8; --cat-static-soft:#1E2C40;
+      --cat-browser:#E08A5E; --cat-browser-soft:#3A241A;
+      --cat-api:#E0B75E; --cat-api-soft:#3A2F16;
+      --cat-example:#82C398; --cat-example-soft:#1C2E20;
+      --cat-practice:#6FCBB0; --cat-practice-soft:#173029;
+      --code-bg:#0E120D; --code-ink:#DCE4D8; --code-line:#232A1F; --code-label:#6E7A69;
+      --code-k:#7EAAE0; --code-s:#D6A65E; --code-c:#6C8A6E; --code-fn:#C9A6E0; --code-n:#8FBE8F;
+      --shadow:0 1px 2px rgba(0,0,0,0.35), 0 8px 24px rgba(0,0,0,0.4);
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#12160F; --surface:#181D15; --surface-2:#1F251A; --surface-3:#272E20;
+    --ink:#E6EBE1; --ink-soft:#A9B5A3; --ink-faint:#6E7A69;
+    --line:#2B3327;
+    --accent:#7FADE8; --accent-soft:#1E2C40; --accent-ink:#9CC0F0;
+    --warn:#E08A5E; --warn-soft:#3A241A;
+    --ok:#82C398; --ok-soft:#1C2E20;
+    --cat-data:#B3A4DD; --cat-data-soft:#28223A;
+    --cat-static:#7FADE8; --cat-static-soft:#1E2C40;
+    --cat-browser:#E08A5E; --cat-browser-soft:#3A241A;
+    --cat-api:#E0B75E; --cat-api-soft:#3A2F16;
+    --cat-example:#82C398; --cat-example-soft:#1C2E20;
+    --cat-practice:#6FCBB0; --cat-practice-soft:#173029;
+    --code-bg:#0E120D; --code-ink:#DCE4D8; --code-line:#232A1F; --code-label:#6E7A69;
+    --code-k:#7EAAE0; --code-s:#D6A65E; --code-c:#6C8A6E; --code-fn:#C9A6E0; --code-n:#8FBE8F;
+    --shadow:0 1px 2px rgba(0,0,0,0.35), 0 8px 24px rgba(0,0,0,0.4);
+  }
+
+  *{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  @media (prefers-reduced-motion:reduce){ html{ scroll-behavior:auto; } *{ transition:none !important; animation:none !important; } }
+  body{ margin:0; background:var(--paper); color:var(--ink); font-family:var(--font-body); font-size:16px; line-height:1.7; }
+  a{ color:var(--accent); }
+  h1,h2,h3,h4{ font-family:var(--font-display); text-wrap:balance; color:var(--ink); margin:0; font-weight:600; }
+  code,.mono{ font-family:var(--font-mono); }
+  table{ font-variant-numeric:tabular-nums; }
+
+  .shell{ display:grid; grid-template-columns:252px minmax(0,1fr); max-width:1200px; margin:0 auto; }
+
+  /* ---------- sidebar ---------- */
+  .toc{ position:sticky; top:0; height:100vh; overflow-y:auto; padding:28px 14px 40px 22px; border-right:1px solid var(--line); }
+  .toc-brand{ font-family:var(--font-display); font-weight:700; font-size:1.02rem; margin-bottom:2px; }
+  .toc-sub{ font-family:var(--font-mono); font-size:0.68rem; color:var(--ink-faint); letter-spacing:0.03em; margin-bottom:18px; }
+  .toc-group{ font-family:var(--font-mono); font-size:0.66rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--ink-faint); margin:16px 0 5px 8px; }
+  .toc-group:first-of-type{ margin-top:0; }
+  .toc ul{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:1px; }
+  .toc a{ display:flex; gap:8px; align-items:baseline; text-decoration:none; color:var(--ink-soft); font-size:0.84rem; padding:5px 8px; border-radius:5px; border-left:2px solid transparent; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .toc a:hover{ background:var(--surface-2); color:var(--ink); }
+  .toc a.hl{ color:var(--cat-practice); font-weight:600; }
+  .toc-dot{ width:6px; height:6px; border-radius:50%; flex:none; margin-top:7px; }
+
+  main{ min-width:0; padding:48px 44px 120px; overflow-x:hidden; }
+  .col{ max-width:760px; min-width:0; }
+
+  /* ---------- hero ---------- */
+  .hero{ max-width:680px; margin-bottom:44px; padding-bottom:30px; border-bottom:1px solid var(--line); }
+  .eyebrow{ font-family:var(--font-mono); font-size:0.72rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--accent); display:block; margin-bottom:10px; }
+  .hero h1{ font-size:clamp(1.7rem,3.4vw,2.15rem); line-height:1.3; margin-bottom:12px; }
+  .hero p{ color:var(--ink-soft); max-width:64ch; margin:0 0 16px; }
+  .hero .meta{ display:flex; flex-wrap:wrap; gap:14px; font-family:var(--font-mono); font-size:0.74rem; color:var(--ink-faint); }
+  .hero .meta b{ color:var(--ink-soft); font-weight:600; }
+
+  /* ---------- part divider ---------- */
+  .part{ display:flex; align-items:baseline; gap:12px; margin:58px 0 22px; }
+  .part:first-of-type{ margin-top:0; }
+  .part .n{ font-family:var(--font-mono); font-size:0.72rem; color:var(--ink-faint); }
+  .part h2{ font-size:1.32rem; }
+  .part .ln{ flex:1; height:1px; background:var(--line); align-self:center; }
+  .part-desc{ color:var(--ink-soft); font-size:0.94rem; max-width:66ch; margin:-10px 0 26px; }
+
+  /* ---------- topic card ---------- */
+  .topic{ border-left:3px solid var(--cat); padding-left:20px; margin-bottom:44px; scroll-margin-top:20px; }
+  .topic .tag{ display:inline-flex; align-items:center; gap:6px; font-family:var(--font-mono); font-size:0.7rem; letter-spacing:0.03em; color:var(--cat); background:var(--cat-soft); padding:3px 9px; border-radius:999px; margin-bottom:10px; }
+  .topic .tag .d{ width:6px; height:6px; border-radius:50%; background:var(--cat); }
+  .topic h3{ font-size:1.18rem; margin-bottom:8px; }
+  .topic .file{ font-family:var(--font-mono); font-size:0.76rem; color:var(--ink-faint); margin-bottom:14px; }
+  .topic p{ margin:0 0 13px; max-width:66ch; }
+  .topic ul,.topic ol{ margin:0 0 13px; padding-left:19px; max-width:64ch; }
+  .topic li{ margin-bottom:5px; }
+  .topic code{ background:var(--surface-2); color:var(--accent-ink); padding:1px 5px; border-radius:4px; font-size:0.88em; }
+
+  .concept{ background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:14px 18px; margin:0 0 16px; box-shadow:var(--shadow); }
+  .concept .eb{ font-family:var(--font-mono); font-size:0.68rem; letter-spacing:0.06em; text-transform:uppercase; color:var(--cat); display:block; margin-bottom:6px; }
+  .concept p:last-child{ margin-bottom:0; }
+
+  .think{ background:var(--surface); border:1px solid var(--line); border-left:3px solid var(--cat, var(--accent)); border-radius:8px; padding:16px 20px; margin:0 0 16px; }
+  .think .think-label{ display:flex; align-items:center; gap:7px; font-family:var(--font-mono); font-size:0.7rem; letter-spacing:0.06em; text-transform:uppercase; color:var(--cat, var(--accent)); font-weight:600; margin-bottom:10px; }
+  .think ol{ margin:0; padding-left:18px; display:flex; flex-direction:column; gap:6px; }
+  .think li{ font-size:0.93rem; color:var(--ink); }
+  .think li::marker{ font-family:var(--font-mono); font-size:0.82em; color:var(--ink-faint); }
+  .think .land{ margin:10px 0 0; padding-top:10px; border-top:1px dashed var(--line); font-size:0.92rem; color:var(--ink-soft); }
+  .think .land b{ color:var(--ink); }
+
+  /* code block */
+  .code{ background:var(--code-bg); border:1px solid var(--code-line); border-radius:10px; overflow-x:auto; margin:0 0 16px; box-shadow:var(--shadow); min-width:0; max-width:100%; }
+  .code .bar{ display:flex; justify-content:space-between; gap:10px; padding:7px 14px; font-family:var(--font-mono); font-size:11px; color:var(--code-label); border-bottom:1px solid var(--code-line); }
+  .code pre{ margin:0; padding:14px 16px 16px; color:var(--code-ink); font-family:var(--font-mono); font-size:0.83rem; line-height:1.68; white-space:pre; }
+  .code .k{ color:var(--code-k); } .code .s{ color:var(--code-s); } .code .c{ color:var(--code-c); font-style:italic; } .code .fn{ color:var(--code-fn); } .code .n{ color:var(--code-n); }
+
+  .note{ border:1px solid var(--line); border-left:3px solid var(--accent); border-radius:6px; padding:12px 16px; margin:0 0 16px; background:var(--surface); font-size:0.94rem; max-width:66ch; }
+  .note b{ color:var(--ink); }
+  .warn{ border-left-color:var(--warn); }
+  .warn .lbl{ color:var(--warn); }
+  .ok-box{ border-left-color:var(--ok); }
+  .lbl{ font-family:var(--font-mono); font-size:0.68rem; letter-spacing:0.05em; text-transform:uppercase; color:var(--accent); display:block; margin-bottom:5px; font-weight:600; }
+
+  .grid-wrap{ overflow-x:auto; margin:0 0 16px; border:1px solid var(--line); border-radius:8px; background:var(--surface); }
+  table.grid{ width:100%; border-collapse:collapse; font-size:0.9rem; }
+  table.grid th,table.grid td{ padding:9px 13px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top; }
+  table.grid th{ font-family:var(--font-mono); font-size:0.7rem; letter-spacing:0.03em; text-transform:uppercase; color:var(--ink-soft); background:var(--surface-2); white-space:nowrap; }
+  table.grid tr:last-child td{ border-bottom:none; }
+
+  .mistake{ border:1px solid var(--line); border-radius:6px; padding:10px 14px; margin:0 0 10px; background:var(--surface); font-size:0.92rem; max-width:66ch; line-height:1.6; }
+  .mistake .x{ color:var(--warn); font-weight:700; margin-right:7px; }
+
+  .flow{ display:flex; flex-wrap:wrap; align-items:center; gap:0; margin:0 0 16px; }
+  .flow .st{ background:var(--surface); border:1px solid var(--line); border-radius:8px; padding:7px 11px; font-size:0.8rem; display:flex; gap:6px; align-items:baseline; }
+  .flow .st .n{ font-family:var(--font-mono); font-size:0.68rem; color:var(--cat); font-weight:600; }
+  .flow .ar{ color:var(--ink-faint); padding:0 7px; font-size:0.85rem; }
+  .flow .ar::before{ content:"→"; }
+
+  /* ---------- data-structure special section ---------- */
+  .hl-section{ background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:30px 32px; margin-bottom:44px; box-shadow:var(--shadow); position:relative; }
+  .hl-section::before{ content:""; position:absolute; left:0; top:16px; bottom:16px; width:4px; background:var(--cat-practice); border-radius:0 3px 3px 0; }
+  .hl-section .kicker{ font-family:var(--font-mono); font-size:0.72rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--cat-practice); margin-bottom:8px; display:block; }
+  .hl-section h2{ font-size:1.5rem; margin-bottom:10px; }
+  .hl-section > p.lede{ color:var(--ink-soft); max-width:64ch; margin-bottom:22px; }
+
+  .decision-cards{ display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:14px; margin-bottom:24px; }
+  .dcard{ background:var(--surface-2); border:1px solid var(--line); border-radius:10px; padding:16px 18px; min-width:0; }
+  .dcard .kind{ font-family:var(--font-mono); font-size:0.82rem; font-weight:700; color:var(--cat-practice); margin-bottom:6px; }
+  .dcard p{ margin:0 0 8px; font-size:0.88rem; color:var(--ink-soft); }
+  .dcard .ex{ font-size:0.82rem; color:var(--ink-faint); }
+
+  .vs-grid{ display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:16px; margin-bottom:16px; }
+  @media (max-width:760px){ .vs-grid{ grid-template-columns:minmax(0,1fr); } }
+  .vs-grid > div{ min-width:0; }
+  .vs-grid .code{ margin-bottom:0; min-width:0; }
+  .vs-label{ font-family:var(--font-mono); font-size:0.72rem; font-weight:600; margin-bottom:8px; display:flex; align-items:center; gap:6px; }
+  .vs-label.good{ color:var(--ok); }
+  .vs-label.bad{ color:var(--warn); }
+
+  /* practice problems */
+  .pcard{ border:1px solid var(--line); border-radius:12px; background:var(--surface); box-shadow:var(--shadow); padding:24px 26px; margin-bottom:26px; scroll-margin-top:20px; }
+  .pcard .phead{ display:flex; justify-content:space-between; align-items:flex-start; gap:14px; flex-wrap:wrap; margin-bottom:14px; }
+  .pcard .pnum{ font-family:var(--font-mono); font-size:0.72rem; color:var(--cat-practice); background:var(--cat-practice-soft); padding:3px 9px; border-radius:999px; font-weight:600; }
+  .pcard h3{ font-size:1.1rem; margin:8px 0 4px; }
+  .pcard .goal{ font-size:0.86rem; color:var(--ink-soft); background:var(--cat-practice-soft); border-radius:6px; padding:8px 12px; margin-bottom:14px; }
+  .pcard .goal b{ color:var(--cat-practice); }
+  .pcard p{ margin:0 0 12px; max-width:66ch; }
+
+  /* details/glossary */
+  .gcard{ margin-bottom:14px; border:1px solid var(--line); border-radius:10px; background:var(--surface); overflow:hidden; }
+  .gcard summary{ list-style:none; cursor:pointer; display:flex; align-items:center; gap:10px; padding:13px 18px; font-family:var(--font-display); font-weight:600; font-size:1rem; }
+  .gcard summary::-webkit-details-marker{ display:none; }
+  .gcard summary::before{ content:"▸"; font-family:var(--font-mono); color:var(--ink-faint); font-size:0.8rem; transition:transform .15s; }
+  .gcard[open] summary::before{ transform:rotate(90deg); }
+  .gcard summary .cnt{ margin-left:auto; font-family:var(--font-mono); font-size:0.7rem; color:var(--ink-faint); font-weight:400; }
+  .gcard .gbody{ padding:0 18px 16px; }
+  table.gt{ width:100%; border-collapse:collapse; font-size:0.85rem; }
+  table.gt th{ text-align:left; font-family:var(--font-mono); font-size:0.68rem; text-transform:uppercase; color:var(--ink-faint); padding:0 10px 7px 0; border-bottom:1px solid var(--line); }
+  table.gt td{ padding:8px 10px 8px 0; border-bottom:1px solid var(--line); vertical-align:top; }
+  table.gt tr:last-child td{ border-bottom:none; }
+  table.gt code{ background:var(--surface-2); padding:1px 5px; border-radius:4px; font-size:0.82em; white-space:nowrap; }
+  table.gt td.used{ font-family:var(--font-mono); font-size:0.72rem; color:var(--ink-faint); white-space:nowrap; }
+
+  .closing{ background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:24px 28px; box-shadow:var(--shadow); margin-top:8px; }
+  .closing h2{ font-size:1.15rem; margin-bottom:12px; }
+  .closing ol{ margin:0; padding-left:20px; color:var(--ink-soft); font-size:0.92rem; display:flex; flex-direction:column; gap:7px; }
+  .closing li b{ color:var(--ink); }
+
+  footer.foot{ margin-top:50px; padding-top:18px; border-top:1px solid var(--line); font-family:var(--font-mono); font-size:0.74rem; color:var(--ink-faint); }
+
+  @media (max-width:1040px){
+    .shell{ grid-template-columns:1fr; }
+    .toc{ position:relative; height:auto; padding:16px 16px 6px; overflow-x:auto; overflow-y:visible; border-right:none; border-bottom:1px solid var(--line); }
+    .toc ul{ flex-direction:row; gap:5px; }
+    .toc a{ white-space:nowrap; }
+    .toc-group{ display:none; }
+    main{ padding:20px 18px 90px; }
+  }
+  @media (max-width:600px){
+    main{ padding:16px 12px 70px; }
+    .code pre{ font-size:0.76rem; padding:12px 12px 14px; }
+  }
+</style>
+
+<div class="shell">
+  <nav class="toc" aria-label="목차">
+    <div class="toc-brand">파이썬 크롤링 필드노트</div>
+    <div class="toc-sub">Bigpy 전체 · 2026-08-24 ~ 08-28</div>
+
+    <div class="toc-group">시작</div>
+    <ul><li><a href="#orient"><span class="toc-dot" style="background:var(--ink-faint)"></span>상황별 선택 기준</a></li></ul>
+
+    <div class="toc-group">Part 1 · 데이터 기초</div>
+    <ul>
+      <li><a href="#s-pickle"><span class="toc-dot" style="background:var(--cat-data)"></span>pickle</a></li>
+      <li><a href="#s-json"><span class="toc-dot" style="background:var(--cat-data)"></span>json</a></li>
+      <li><a href="#s-openpyxl"><span class="toc-dot" style="background:var(--cat-data)"></span>openpyxl</a></li>
+      <li><a href="#s-pandas1"><span class="toc-dot" style="background:var(--cat-data)"></span>pandas 기본</a></li>
+      <li><a href="#s-pandas2"><span class="toc-dot" style="background:var(--cat-data)"></span>pandas CSV옵션</a></li>
+      <li><a href="#s-pandas3"><span class="toc-dot" style="background:var(--cat-data)"></span>pandas 전처리·axis</a></li>
+      <li><a href="#s-numpy"><span class="toc-dot" style="background:var(--cat-data)"></span>numpy</a></li>
+      <li><a href="#s-matplotlib"><span class="toc-dot" style="background:var(--cat-data)"></span>matplotlib</a></li>
+    </ul>
+
+    <ul style="margin:14px 0;">
+      <li><a href="#filesave" class="hl"><span class="toc-dot" style="background:var(--cat-practice)"></span>★ txt·CSV·JSON·엑셀 저장</a></li>
+      <li><a href="#datastruct" class="hl"><span class="toc-dot" style="background:var(--cat-practice)"></span>★ 리스트 vs 딕셔너리</a></li>
+    </ul>
+
+    <div class="toc-group">Part 2 · 정적 크롤링</div>
+    <ul>
+      <li><a href="#s-download"><span class="toc-dot" style="background:var(--cat-static)"></span>다운로드·파싱</a></li>
+      <li><a href="#s-tree"><span class="toc-dot" style="background:var(--cat-static)"></span>트리 탐색</a></li>
+      <li><a href="#s-find"><span class="toc-dot" style="background:var(--cat-static)"></span>find() 정리</a></li>
+      <li><a href="#s-select"><span class="toc-dot" style="background:var(--cat-static)"></span>select() 정리</a></li>
+      <li><a href="#s-urlparse"><span class="toc-dot" style="background:var(--cat-static)"></span>urllib.parse</a></li>
+      <li><a href="#s-headers"><span class="toc-dot" style="background:var(--cat-static)"></span>헤더·requests</a></li>
+      <li><a href="#s-static3"><span class="toc-dot" style="background:var(--cat-static)"></span>실전 3제</a></li>
+    </ul>
+
+    <div class="toc-group">Part 3 · 브라우저 자동화</div>
+    <ul>
+      <li><a href="#s-selenium"><span class="toc-dot" style="background:var(--cat-browser)"></span>Selenium</a></li>
+      <li><a href="#s-playwright"><span class="toc-dot" style="background:var(--cat-browser)"></span>Playwright</a></li>
+      <li><a href="#s-combo"><span class="toc-dot" style="background:var(--cat-browser)"></span>콤보 패턴</a></li>
+    </ul>
+
+    <div class="toc-group">Part 4 · API 연동</div>
+    <ul>
+      <li><a href="#s-apibasic"><span class="toc-dot" style="background:var(--cat-api)"></span>JSON 기본골격</a></li>
+      <li><a href="#s-xml"><span class="toc-dot" style="background:var(--cat-api)"></span>XML+CDATA</a></li>
+      <li><a href="#s-zip"><span class="toc-dot" style="background:var(--cat-api)"></span>zip()</a></li>
+      <li><a href="#s-minmax"><span class="toc-dot" style="background:var(--cat-api)"></span>min/max+lambda</a></li>
+      <li><a href="#s-sort"><span class="toc-dot" style="background:var(--cat-api)"></span>딕셔너리 정렬</a></li>
+      <li><a href="#s-format"><span class="toc-dot" style="background:var(--cat-api)"></span>숫자 포맷</a></li>
+      <li><a href="#s-filter"><span class="toc-dot" style="background:var(--cat-api)"></span>리스트 컴프리헨션</a></li>
+      <li><a href="#s-dictwriter"><span class="toc-dot" style="background:var(--cat-api)"></span>DictWriter</a></li>
+      <li><a href="#s-dotenv"><span class="toc-dot" style="background:var(--cat-api)"></span>.env</a></li>
+      <li><a href="#s-frank"><span class="toc-dot" style="background:var(--cat-api)"></span>★ frank06 완전분석</a></li>
+    </ul>
+
+    <div class="toc-group">Part 5 · example 사전</div>
+    <ul>
+      <li><a href="#s-session"><span class="toc-dot" style="background:var(--cat-example)"></span>세션 저장·재사용</a></li>
+      <li><a href="#s-img"><span class="toc-dot" style="background:var(--cat-example)"></span>이미지 파이프라인</a></li>
+      <li><a href="#s-finance"><span class="toc-dot" style="background:var(--cat-example)"></span>finance 2버전 비교</a></li>
+      <li><a href="#s-youtube"><span class="toc-dot" style="background:var(--cat-example)"></span>youtube06 콤보</a></li>
+      <li><a href="#s-ruliweb"><span class="toc-dot" style="background:var(--cat-example)"></span>ruliweb 세션크롤링</a></li>
+    </ul>
+
+    <div class="toc-group">Part 6 · 연습문제</div>
+    <ul>
+      <li><a href="#p1"><span class="toc-dot" style="background:var(--cat-practice)"></span>1. 리스트만</a></li>
+      <li><a href="#p2"><span class="toc-dot" style="background:var(--cat-practice)"></span>2. 리스트[딕셔너리]</a></li>
+      <li><a href="#p3"><span class="toc-dot" style="background:var(--cat-practice)"></span>3. 딕셔너리 하나</a></li>
+      <li><a href="#p4"><span class="toc-dot" style="background:var(--cat-practice)"></span>4. 조회용 딕셔너리</a></li>
+      <li><a href="#p5"><span class="toc-dot" style="background:var(--cat-practice)"></span>5. 누적+중복제거</a></li>
+    </ul>
+
+    <div class="toc-group">부록</div>
+    <ul>
+      <li><a href="#glossary"><span class="toc-dot" style="background:var(--ink-faint)"></span>메서드 사전</a></li>
+      <li><a href="#imports"><span class="toc-dot" style="background:var(--ink-faint)"></span>Import 가이드</a></li>
+      <li><a href="#confusing"><span class="toc-dot" style="background:var(--ink-faint)"></span>헷갈리는 것 총정리</a></li>
+    </ul>
+  </nav>
+
+  <main>
+    <div class="col">
+
+      <header class="hero">
+        <span class="eyebrow">Bigpy · chapter01 – 05 + example 종합</span>
+        <h1>이번 주에 배운 파이썬 크롤링, 한 문서로</h1>
+        <p>chapter01부터 05, example 폴더까지 이번 주 실습에서 나온 개념을 하나로 묶었습니다. 코드를 다시 열어보지 않아도 각 조각이 뭘 하는지, 왜 그렇게 짜는지 이 문서만으로 따라갈 수 있게 구성했습니다. 특히 자주 헷갈렸던 "리스트냐 딕셔너리냐" 판단은 별도 섹션으로 뺐고, 맨 끝엔 배운 걸로 직접 짜본 연습문제 5개를 코드와 함께 실었습니다.</p>
+        <div class="meta">
+          <span><b>범위</b> — Bigpy/chapter01~05, example</span>
+          <span><b>기간</b> — 2026-08-24 ~ 08-28 (5일)</span>
+          <span><b>라이브러리</b> — pickle·json·openpyxl·pandas·numpy·matplotlib·bs4·requests·selenium·playwright</span>
+        </div>
+      </header>
+
+      <!-- ============ ORIENTATION ============ -->
+      <section class="topic" id="orient" style="--cat:var(--ink-faint); --cat-soft:var(--surface-2);">
+        <span class="tag"><span class="d"></span>오리엔테이션</span>
+        <h3>새 사이트를 만나면, 어떤 방법부터 쓸까</h3>
+        <p>아래 순서대로 하나씩 확인하면서 내려가면, 이 문서의 어느 Part를 봐야 하는지 자연스럽게 정해집니다.</p>
+        <div class="grid-wrap">
+          <table class="grid">
+            <thead><tr><th>확인할 것</th><th>맞으면 → 방법</th><th>이 문서 위치</th></tr></thead>
+            <tbody>
+              <tr><td>페이지 소스보기(Ctrl+U)에 원하는 데이터가 이미 텍스트로 있다</td><td>requests + BeautifulSoup</td><td>Part 2</td></tr>
+              <tr><td>개발자도구 Network 탭에 JSON 응답이 보인다</td><td>requests + .json()</td><td>Part 2 · Part 4</td></tr>
+              <tr><td>로그인해야 볼 수 있는 페이지다</td><td>Selenium 또는 Playwright + 세션 저장</td><td>Part 3 · Part 5</td></tr>
+              <tr><td>스크롤·클릭 후에야 데이터가 뜬다 (JS 렌더링)</td><td>Selenium 또는 Playwright</td><td>Part 3</td></tr>
+              <tr><td>이미지·PDF 같은 파일 자체를 저장해야 한다</td><td>브라우저로 주소만 수집 + requests로 다운로드(콤보)</td><td>Part 3 · Part 5</td></tr>
+              <tr><td>공공기관 API처럼 XML을 준다</td><td>requests + BeautifulSoup(find/find_all)</td><td>Part 4</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="note"><b>그 다음 질문</b> — 방법이 정해졌다면 바로 이어서 "결과를 리스트로 모을까, 딕셔너리로 모을까"를 정해야 합니다. 이게 <a href="#datastruct">바로 다음 섹션</a>입니다 — 크롤링 코드를 짤 때 방법(어떻게 가져올지)만큼이나 자주 헷갈리는 지점이라 따로 뺐습니다.</div>
+      </section>
+
+      <!-- ================= PART 1 ================= -->
+      <div class="part"><span class="n">PART 1</span><h2>데이터 다루기 기초</h2><div class="ln"></div></div>
+      <p class="part-desc">크롤링 전에 필요한 체력 운동입니다. chapter01~02에서 다룬 파일 입출력·표 데이터·시각화 — 크롤링 결과를 저장하고 가공할 때 그대로 씁니다.</p>
+
+      <section class="topic" id="s-pickle" style="--cat:var(--cat-data); --cat-soft:var(--cat-data-soft);">
+        <span class="tag"><span class="d"></span>ch01 · bigpy01~02.py</span>
+        <h3>pickle — 직렬화 · 역직렬화</h3>
+        <div class="concept"><span class="eb">개념</span><p>프로그램이 끝나면 메모리 속 변수는 사라집니다. <b>직렬화(dump)</b>는 파이썬 객체를 파일로 저장 가능한 바이트로 바꾸는 것, <b>역직렬화(load)</b>는 그 바이트를 다시 원래 객체로 복원하는 것입니다. pickle은 거의 모든 파이썬 객체를 그대로 저장하지만 결과물이 사람이 못 읽는 바이너리라서, 신뢰 못 하는 pickle 파일은 절대 열면 안 됩니다.</p></div>
+        <div class="code"><div class="bar"><span>bigpy01.py</span><span>쓰기</span></div><pre><span class="k">import</span> pickle
+
+f = <span class="fn">open</span>(<span class="s">'setting.txt'</span>, <span class="s">'wb'</span>)   <span class="c"># wb = write binary, 항상 이 모드</span>
+setting = [{<span class="s">'title'</span>: <span class="s">'python program'</span>}, {<span class="s">'author'</span>: <span class="s">'soldesk'</span>}]
+pickle.dump(setting, f)
+f.close()</pre></div>
+        <div class="code"><div class="bar"><span>bigpy02.py</span><span>읽기</span></div><pre>f = <span class="fn">open</span>(<span class="s">'setting.txt'</span>, <span class="s">'rb'</span>)   <span class="c"># rb = read binary</span>
+setting = pickle.load(f)
+f.close()</pre></div>
+        <div class="grid-wrap"><table class="grid"><thead><tr><th>함수</th><th>대상</th></tr></thead><tbody>
+          <tr><td><code>dump()</code> / <code>load()</code></td><td>파일 객체를 직접 넘길 때</td></tr>
+          <tr><td><code>dumps()</code> / <code>loads()</code></td><td>메모리상 bytes를 직접 다룰 때 (s = string)</td></tr>
+        </tbody></table></div>
+      </section>
+
+      <section class="topic" id="s-json" style="--cat:var(--cat-data); --cat-soft:var(--cat-data-soft);">
+        <span class="tag"><span class="d"></span>ch01 · json05~06.py</span>
+        <h3>json — 직렬화 · 역직렬화</h3>
+        <div class="concept"><span class="eb">개념</span><p>pickle과 같은 개념이지만, 저장 형태가 <b>사람이 읽는 텍스트</b>이고 거의 모든 언어·웹 API가 공통으로 쓰는 표준 포맷입니다. 대신 dict/list/str/숫자 같은 기본 타입만 다룹니다 — 크롤링 결과 저장에 가장 많이 씁니다.</p></div>
+        <div class="grid-wrap"><table class="grid"><thead><tr><th></th><th>pickle</th><th>json</th></tr></thead><tbody>
+          <tr><td>직렬화</td><td><code>pickle.dump(obj, f)</code></td><td><code>json.dump(obj, f)</code></td></tr>
+          <tr><td>역직렬화(파일)</td><td><code>pickle.load(f)</code></td><td><code>json.load(f)</code></td></tr>
+          <tr><td>역직렬화(문자열)</td><td><code>pickle.loads(b)</code></td><td><code>json.loads(s)</code></td></tr>
+          <tr><td>형태</td><td>바이너리</td><td>텍스트</td></tr>
+        </tbody></table></div>
+        <div class="code"><div class="bar"><span>json06.py</span><span></span></div><pre>data = {}
+data[<span class="s">'people'</span>] = []
+data[<span class="s">'people'</span>].append({<span class="s">'name'</span>: <span class="s">'kim'</span>, <span class="s">'grade'</span>: [<span class="n">95</span>, <span class="n">77</span>, <span class="n">89</span>]})
+
+<span class="k">with</span> <span class="fn">open</span>(<span class="s">'member.json'</span>, <span class="s">'w'</span>) <span class="k">as</span> f:
+    json.dump(data, f, ensure_ascii=<span class="k">False</span>, indent=<span class="n">2</span>)  <span class="c"># 한글 안 깨지게 + 들여쓰기</span>
+
+<span class="k">with</span> <span class="fn">open</span>(<span class="s">'member.json'</span>, <span class="s">'r'</span>) <span class="k">as</span> f:
+    r = json.load(f)
+    <span class="k">for</span> p <span class="k">in</span> r[<span class="s">'people'</span>]:
+        <span class="fn">print</span>(p[<span class="s">'name'</span>])</pre></div>
+        <div class="note"><b>load() vs loads()</b> — <code>load(파일객체)</code>는 파일을 직접 넘겨서 역직렬화, <code>loads(문자열)</code>은 이미 <code>.read()</code>로 읽은 문자열을 역직렬화(s=string). API 응답처럼 이미 문자열이면 <code>loads()</code>를 씁니다. <code>requests</code>의 <code>.json()</code>은 이 과정을 대신 해주는 것입니다.</div>
+      </section>
+
+      <section class="topic" id="s-openpyxl" style="--cat:var(--cat-data); --cat-soft:var(--cat-data-soft);">
+        <span class="tag"><span class="d"></span>ch01 · bigpy04~05.py</span>
+        <h3>openpyxl — 엑셀 쓰기 · 읽기</h3>
+        <div class="concept"><span class="eb">개념</span><p><b>Workbook</b>(파일 전체) 안에 여러 <b>Worksheet</b>(시트)가 있고, 셀은 <code>cell(row=, column=)</code>으로 접근합니다. <b>엑셀 좌표는 1부터 시작</b>이라, 0-based인 <code>enumerate</code> 인덱스엔 항상 <code>+1</code>이 필요합니다.</p></div>
+        <div class="code"><div class="bar"><span>bigpy04.py</span><span>쓰기</span></div><pre>wb = openpyxl.Workbook()
+sheet = wb.active
+sheet.title = <span class="s">'회원정보'</span>
+
+<span class="k">for</span> idx, title <span class="k">in</span> <span class="fn">enumerate</span>(header_titles):
+    sheet.cell(row=<span class="n">1</span>, column=idx+<span class="n">1</span>, value=title)   <span class="c"># idx+1: 엑셀은 1부터</span>
+
+wb.save(<span class="s">'members.xlsx'</span>); wb.close()</pre></div>
+        <div class="code"><div class="bar"><span>bigpy05.py</span><span>읽기</span></div><pre>wb = openpyxl.load_workbook(<span class="s">'sample.xlsx'</span>)
+sheet = wb[<span class="s">'Sheet1'</span>]
+
+<span class="k">for</span> row <span class="k">in</span> sheet.iter_rows(min_row=<span class="n">2</span>):   <span class="c"># 2행부터(헤더 제외), 가장 일반적인 순회방식</span>
+    <span class="k">for</span> cell <span class="k">in</span> row:
+        <span class="fn">print</span>(cell.value)
+wb.close()</pre></div>
+        <div class="mistake"><span class="x">✗</span> 행 번호를 반복문 밖에서 한 번만 정하고 안에서 안 늘리면 여러 행이 같은 위치에 덮어써집니다. <code>row_num += 1</code>처럼 매번 늘려야 합니다.</div>
+      </section>
+
+      <section class="topic" id="s-pandas1" style="--cat:var(--cat-data); --cat-soft:var(--cat-data-soft);">
+        <span class="tag"><span class="d"></span>ch01 · bigpy07~08.py</span>
+        <h3>pandas — Series · DataFrame</h3>
+        <div class="concept"><span class="eb">개념</span><p><b>Series</b>는 라벨(인덱스)이 붙은 1차원 배열(컬럼 하나), <b>DataFrame</b>은 Series들이 모인 2차원 표 전체입니다. SQL의 테이블/행/열 개념과 대응됩니다.</p></div>
+        <div class="code"><div class="bar"><span>bigpy08.py</span><span></span></div><pre>temperatures = [[<span class="n">3.3</span>, <span class="n">34.5</span>, <span class="n">14.2</span>, -<span class="n">10</span>], [<span class="n">7.1</span>, <span class="n">32.1</span>, <span class="n">10.7</span>, <span class="n">2</span>]]
+data = pd.DataFrame(temperatures,
+                     index=[<span class="s">'Seoul'</span>, <span class="s">'Pusan'</span>],
+                     columns=[<span class="s">'Spring'</span>, <span class="s">'Summer'</span>, <span class="s">'Fall'</span>, <span class="s">'Winter'</span>])</pre></div>
+      </section>
+
+      <section class="topic" id="s-pandas2" style="--cat:var(--cat-data); --cat-soft:var(--cat-data-soft);">
+        <span class="tag"><span class="d"></span>ch02 · csv01.py</span>
+        <h3>pandas — CSV 읽기 옵션</h3>
+        <div class="concept"><span class="eb">개념</span><p>실제 CSV는 위에 제목 줄이 껴있거나 헤더가 없기도 합니다. 아래 옵션들은 서로 <b>독립적</b>이라 조합을 정확히 맞춰야 합니다.</p></div>
+        <div class="grid-wrap"><table class="grid"><thead><tr><th>옵션</th><th>의미</th></tr></thead><tbody>
+          <tr><td><code>skiprows=[n]</code></td><td>리스트 → 그 인덱스 줄만 제외</td></tr>
+          <tr><td><code>skiprows=n</code></td><td>정수 → 맨 앞 n줄 제외</td></tr>
+          <tr><td><code>header=None</code></td><td>어떤 줄도 컬럼명으로 안 씀</td></tr>
+          <tr><td><code>names=[...]</code></td><td>컬럼명 직접 지정 (헤더 줄을 자동으로 없애주진 않음)</td></tr>
+          <tr><td><code>index_col=[n]</code></td><td>n번째 컬럼을 행 인덱스로</td></tr>
+        </tbody></table></div>
+        <div class="code"><div class="bar"><span>csv01.py</span><span></span></div><pre><span class="k">from</span> pathlib <span class="k">import</span> Path
+BASE_DIR = Path(__file__).resolve().parent
+df = pd.read_csv(BASE_DIR/<span class="s">"csv_s1.csv"</span>, skiprows=<span class="n">2</span>, header=<span class="k">None</span>,
+                  names=[<span class="s">"Month"</span>, <span class="n">2023</span>, <span class="n">2024</span>, <span class="n">2025</span>], index_col=[<span class="n">0</span>])</pre></div>
+        <div class="mistake"><span class="x">✗</span> <code>names=[...]</code>는 "헤더가 없다 치고 새 이름표만 붙이는 것"이라, 원래 헤더 텍스트 줄이 데이터로 그대로 남을 수 있습니다. <code>skiprows</code>로 그 줄까지 물리적으로 걷어내야 합니다.</div>
+        <div class="note"><b>상대경로 문제</b> — 상대경로는 스크립트 위치가 아니라 <b>터미널 cwd 기준</b>입니다. <code>Path(__file__).resolve().parent</code>로 절대경로를 고정하면 어디서 실행하든 항상 스크립트 옆 파일을 찾습니다. (chapter04 이후 거의 모든 파일이 이 패턴을 씁니다.)</div>
+      </section>
+
+      <section class="topic" id="s-pandas3" style="--cat:var(--cat-data); --cat-soft:var(--cat-data-soft);">
+        <span class="tag"><span class="d"></span>ch02 · excel03~04.py</span>
+        <h3>pandas — 전처리 & axis 방향</h3>
+        <div class="grid-wrap"><table class="grid"><thead><tr><th>옵션</th><th>역할</th></tr></thead><tbody>
+          <tr><td><code>skipfooter=n</code></td><td>맨 아래 n줄 제외 (합계행 등)</td></tr>
+          <tr><td><code>na_values='...'</code></td><td>지정 문자열을 결측치(NaN)로 취급</td></tr>
+          <tr><td><code>converters={"col": fn}</code></td><td>해당 컬럼 값을 읽으며 함수로 가공</td></tr>
+        </tbody></table></div>
+        <div class="grid-wrap"><table class="grid"><thead><tr><th>값</th><th>방향</th><th>결과</th></tr></thead><tbody>
+          <tr><td><code>axis=0</code> (기본)</td><td>위→아래</td><td>컬럼별 결과</td></tr>
+          <tr><td><code>axis=1</code></td><td>왼쪽→오른쪽</td><td>행별 결과</td></tr>
+        </tbody></table></div>
+        <div class="code"><div class="bar"><span>excel04.py</span><span></span></div><pre><span class="c"># 행별(사람별) 평균 -> axis=1 (가로로 더함)</span>
+df[<span class="s">'Avg'</span>] = df[[<span class="s">'2018'</span>,<span class="s">'2019'</span>,<span class="s">'2020'</span>]].mean(axis=<span class="n">1</span>).round(<span class="n">2</span>)
+<span class="c"># 컬럼별(연도별) 최댓값 -> axis=0 (세로로 비교)</span>
+max_values = df[[<span class="s">'2018'</span>,<span class="s">'2019'</span>,<span class="s">'2020'</span>]].max(axis=<span class="n">0</span>)</pre></div>
+        <div class="note">헷갈리면 "학생 한 명(행)이 치른 시험 점수를 가로로 더한다"=<code>axis=1</code>, "연도 컬럼 하나(세로) 전체를 더한다"=<code>axis=0</code>으로 문장을 만들어보면 방향이 잡힙니다.</div>
+      </section>
+
+      <section class="topic" id="s-numpy" style="--cat:var(--cat-data); --cat-soft:var(--cat-data-soft);">
+        <span class="tag"><span class="d"></span>ch01 · bigpy06.py · dp02.py</span>
+        <h3>numpy — 배열 · 난수</h3>
+        <div class="concept"><span class="eb">개념</span><p>C로 구현된 수치 계산 라이브러리. <code>np.array()</code>는 파이썬 리스트와 달리 <code>+, *</code>가 원소 단위로 적용됩니다.</p></div>
+        <div class="grid-wrap"><table class="grid"><thead><tr><th>함수</th><th>분포</th><th>파라미터</th></tr></thead><tbody>
+          <tr><td><code>randint(low, high, size)</code></td><td>균등분포, 정수</td><td>범위 직접 지정</td></tr>
+          <tr><td><code>randn(...)</code></td><td>표준정규분포(평균0·표준편차1 고정)</td><td>크기만</td></tr>
+          <tr><td><code>normal(loc, scale, size)</code></td><td>정규분포, 임의</td><td>평균/표준편차 지정</td></tr>
+        </tbody></table></div>
+        <div class="note">균등분포는 범위 안 모든 값이 뽑힐 확률이 같고(주사위), 정규분포는 평균 근처가 잦고 멀어질수록 드문 종모양 분포입니다.</div>
+      </section>
+
+      <section class="topic" id="s-matplotlib" style="--cat:var(--cat-data); --cat-soft:var(--cat-data-soft);">
+        <span class="tag"><span class="d"></span>ch01 · bigpy09~10.py</span>
+        <h3>matplotlib — 그래프</h3>
+        <div class="concept"><span class="eb">개념</span><p><code>plt.plot(x,y)</code> / <code>plt.bar(x,y)</code>는 x와 y를 <b>같은 길이·같은 순서</b>로 짝지어 그립니다. 길이가 다르면 에러 — y를 x로부터 계산하는 습관이 안전합니다.</p></div>
+        <div class="code"><div class="bar"><span>bigpy10.py</span><span></span></div><pre>temperatures = [<span class="n">3.3</span>, <span class="n">34.5</span>, <span class="n">14.2</span>, -<span class="n">10</span>]
+x_labels = [<span class="s">'Spring'</span>,<span class="s">'Summer'</span>,<span class="s">'Fall'</span>,<span class="s">'Winter'</span>]
+
+plt.bar(<span class="fn">list</span>(<span class="fn">range</span>(<span class="n">4</span>)), temperatures)
+plt.xticks(<span class="fn">list</span>(<span class="fn">range</span>(<span class="n">4</span>)), x_labels)</pre></div>
+      </section>
+
+      <!-- ================= FILE SAVE FORMAT (KEY SECTION) ================= -->
+      <div class="hl-section" id="filesave">
+        <span class="kicker">★ 저장 직전에 항상 갈리는 선택</span>
+        <h2>결과를 파일로 저장하기 — txt · CSV · JSON · 엑셀</h2>
+        <p class="lede">지금까지 pickle·json·openpyxl을 각각 따로 배웠는데, 막상 "이 결과를 어떤 파일로 저장하지?"를 고를 때는 네 가지를 한 번에 놓고 비교해야 헷갈리지 않습니다. <b>같은 데이터를 형식 4개로 각각 저장</b>하는 코드를 나란히 뒀습니다 — 코드가 왜 조금씩 달라지는지 그 차이만 보면 됩니다.</p>
+
+        <div class="think">
+          <span class="think-label">사고 흐름</span>
+          <ol>
+            <li>저장할 결과가 <code>book_result = [{"제목":"A", "가격":"£51.77", "별점":"Three"}, ...]</code>처럼 <a href="#datastruct">list[dict]</a> 모양이라고 하자.</li>
+            <li>이걸 사람이 엑셀에서 열어보거나 표로 정렬해서 볼 거라면 → 한 줄(row)에 필드 여러 개가 나란히 있어야 하니 <b>CSV</b>가 자연스럽다.</li>
+            <li>이 결과를 다른 프로그램이 다시 읽어서 <code>dict</code>로 그대로 복원해 쓸 거라면(중첩 구조가 있다면 특히) → 모양을 안 망가뜨리는 <b>JSON</b>이 낫다.</li>
+            <li>서식(색·병합·여러 시트)까지 필요하거나 이미 pandas로 분석 중이었다면 → <b>엑셀</b>로 바로 뽑는다.</li>
+            <li>값이 제목처럼 필드 하나뿐인 <code>list[str]</code>이라면 → 애초에 표가 필요 없으니 <b>txt</b> 한 줄씩이 제일 간단하다.</li>
+          </ol>
+          <div class="land">→ 즉 <b>"필드가 하나냐 여러 개냐"와 "사람이 볼 거냐, 프로그램이 다시 읽을 거냐"</b> 두 질문이 형식을 정한다.</div>
+        </div>
+
+        <div class="grid-wrap">
+          <table class="grid">
+            <thead><tr><th>형식</th><th>어울리는 자료구조</th><th>핵심 코드</th><th>필수 옵션</th><th>언제</th></tr></thead>
+            <tbody>
+              <tr><td><b>txt</b></td><td>list[str] (필드 1개)</td><td><code>f.write(값+"\n")</code></td><td><code>encoding="utf-8"</code></td><td>제목만, 로그처럼 단순 텍스트</td></tr>
+              <tr><td><b>CSV</b></td><td>list[dict] (레코드 여러 개)</td><td><code>csv.DictWriter</code></td><td><code>newline=""</code>, <code>encoding="utf-8-sig"</code></td><td>엑셀로 열어볼 정형 데이터</td></tr>
+              <tr><td><b>JSON</b></td><td>dict, list[dict], 중첩 구조</td><td><code>json.dump(...)</code></td><td><code>ensure_ascii=False</code>, <code>indent=2</code></td><td>구조 그대로 보존, 나중에 다시 읽어 쓸 데이터</td></tr>
+              <tr><td><b>엑셀</b></td><td>list[dict] / DataFrame</td><td><code>df.to_excel()</code> 또는 <code>openpyxl</code></td><td><code>index=False</code>, <code>pip install openpyxl</code></td><td>서식·여러 시트·차트 필요할 때</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h4 style="font-family:var(--font-mono); font-size:0.8rem; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink-soft); margin:26px 0 10px;">같은 데이터, 형식 4개로 저장 — 코드 비교</h4>
+
+        <div class="code"><div class="bar"><span>① txt — 필드 하나(list[str])일 때</span><span></span></div><pre>titles = [<span class="s">"A Light in the Attic"</span>, <span class="s">"Tipping the Velvet"</span>, <span class="s">"Soumission"</span>]
+
+<span class="k">with</span> <span class="fn">open</span>(<span class="s">"titles.txt"</span>, <span class="s">"w"</span>, encoding=<span class="s">"utf-8"</span>) <span class="k">as</span> f:
+    <span class="k">for</span> t <span class="k">in</span> titles:
+        f.write(t + <span class="s">"\n"</span>)   <span class="c"># \n을 직접 안 붙이면 한 줄에 다 붙어버림</span></pre></div>
+
+        <div class="code"><div class="bar"><span>② CSV — 레코드 여러 개(list[dict])일 때</span><span>가장 흔한 크롤링 저장</span></div><pre><span class="k">import</span> csv
+
+book_result = [
+    {<span class="s">"제목"</span>:<span class="s">"A Light in the Attic"</span>, <span class="s">"가격"</span>:<span class="s">"£51.77"</span>, <span class="s">"별점"</span>:<span class="s">"Three"</span>},
+    {<span class="s">"제목"</span>:<span class="s">"Tipping the Velvet"</span>, <span class="s">"가격"</span>:<span class="s">"£53.74"</span>, <span class="s">"별점"</span>:<span class="s">"One"</span>},
+]
+
+<span class="k">with</span> <span class="fn">open</span>(<span class="s">"books.csv"</span>, <span class="s">"w"</span>, newline=<span class="s">""</span>, encoding=<span class="s">"utf-8-sig"</span>) <span class="k">as</span> f:
+    writer = csv.DictWriter(f, fieldnames=[<span class="s">"제목"</span>, <span class="s">"가격"</span>, <span class="s">"별점"</span>])
+    writer.writeheader()
+    writer.writerows(book_result)   <span class="c"># dict의 key가 fieldnames와 정확히 같아야 함</span></pre></div>
+        <div class="note">CSV인데 필드가 하나뿐인 <code>list[str]</code>을 저장하고 싶다면 <code>DictWriter</code> 대신 더 단순한 <code>csv.writer</code>로 충분합니다: <code>writer = csv.writer(f); writer.writerow(["제목"]); [writer.writerow([t]) for t in titles]</code>.</div>
+
+        <div class="code"><div class="bar"><span>③ JSON — 구조를 그대로 보존할 때</span><span>중첩도 그대로 유지됨</span></div><pre><span class="k">import</span> json
+
+<span class="k">with</span> <span class="fn">open</span>(<span class="s">"books.json"</span>, <span class="s">"w"</span>, encoding=<span class="s">"utf-8"</span>) <span class="k">as</span> f:
+    json.dump(book_result, f, ensure_ascii=<span class="k">False</span>, indent=<span class="n">2</span>)
+    <span class="c"># book_result가 list[dict]든 dict든 중첩 dict든, 모양 그대로 저장됨</span></pre></div>
+
+        <div class="code"><div class="bar"><span>④ 엑셀 — pandas 버전(짧음) vs openpyxl 버전(서식 제어)</span><span></span></div><pre><span class="k">import</span> pandas <span class="k">as</span> pd
+df = pd.DataFrame(book_result)
+df.to_excel(<span class="s">"books.xlsx"</span>, index=<span class="k">False</span>, sheet_name=<span class="s">"Sheet1"</span>)   <span class="c"># index=False 없으면 왼쪽에 0,1,2... 컬럼이 하나 더 생김</span>
+
+<span class="c"># -- 서식(굵게, 셀 배경색 등)까지 직접 다뤄야 하면 openpyxl로 한 셀씩 --</span>
+<span class="k">import</span> openpyxl
+wb = openpyxl.Workbook()
+sheet = wb.active
+sheet.append([<span class="s">"제목"</span>, <span class="s">"가격"</span>, <span class="s">"별점"</span>])           <span class="c"># 헤더 행</span>
+<span class="k">for</span> b <span class="k">in</span> book_result:
+    sheet.append([b[<span class="s">"제목"</span>], b[<span class="s">"가격"</span>], b[<span class="s">"별점"</span>]])
+wb.save(<span class="s">"books.xlsx"</span>)</pre></div>
+
+        <h4 style="font-family:var(--font-mono); font-size:0.8rem; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink-soft); margin:26px 0 10px;">형식별로 꼭 걸리는 실수</h4>
+        <div class="mistake"><span class="x">✗</span> txt에 <code>f.write(t)</code>만 하고 <code>"\n"</code>을 안 붙이면 모든 제목이 줄바꿈 없이 한 줄로 다 이어붙습니다.</div>
+        <div class="mistake"><span class="x">✗</span> CSV에서 <code>newline=""</code>를 빼먹으면 윈도우에서 매 줄 사이에 빈 줄이 하나씩 더 생깁니다. <code>encoding="utf-8-sig"</code>를 안 쓰면 엑셀에서 한글이 깨져 보입니다(메모장으로 보면 멀쩡한데 엑셀에서만 깨지는 게 이 문제의 특징).</div>
+        <div class="mistake"><span class="x">✗</span> JSON에서 <code>ensure_ascii=False</code>를 빼먹으면 한글이 <code>\uXXXX</code> 코드로 저장됩니다(파일은 정상이지만 사람이 못 읽음). <code>json.dump</code>는 dict/list/str/숫자/불리언만 저장 가능 — 커스텀 클래스 객체를 그대로 넣으면 <code>TypeError</code>.</div>
+        <div class="mistake"><span class="x">✗</span> 엑셀을 pandas로 저장할 때 <code>index=False</code>를 빼먹으면 원치 않는 인덱스 컬럼이 맨 왼쪽에 하나 더 생깁니다. openpyxl로 직접 쓸 때는 <code>cell(row=, column=)</code> 좌표가 <b>1부터 시작</b>이라는 것도 잊기 쉽습니다(<a href="#s-openpyxl">openpyxl 섹션</a> 참고).</div>
+      </div>
+
+      <!-- ================= DATA STRUCTURE (KEY SECTION) ================= -->
+      <div class="hl-section" id="datastruct">
+        <span class="kicker">★ 이번 주 가장 많이 헷갈렸던 것</span>
+        <h2>크롤링 결과, 리스트로 모을까 딕셔너리로 모을까</h2>
+        <p class="lede">크롤링 코드는 늘 "여러 개를 모아서 저장"하는 구조입니다. 근데 그 "여러 개"를 담을 그릇을 잘못 고르면, 저장하는 코드부터 나중에 값을 꺼내는 코드까지 전부 모양이 달라집니다. 판단 기준은 딱 두 가지 질문입니다.</p>
+
+        <div class="think">
+          <span class="think-label">사고 흐름</span>
+          <ol>
+            <li>지금 받은 데이터가 뭔지부터 본다 — GitHub 검색 API가 주는 저장소 100개, 각각 이름·별점·언어·설명처럼 필드가 여러 개다.</li>
+            <li>레코드 하나에 필드가 여러 개면 그 레코드 하나는 dict가 자연스럽다 — 그럼 "그 dict를 100개 어떻게 모을까"가 다음 질문이 된다.</li>
+            <li>여기서 바로 자료구조를 정하지 않고, 모은 다음 뭘 할지부터 그려본다 — star 10000 이상만 거르고, star 순으로 정렬해서 출력하고, 끝에 CSV로 저장한다.</li>
+            <li>세 가지 다 "전체를 훑는" 동작이지 "저장소 이름 하나로 즉시 찾기"가 아니다 — 즉시 조회가 목적이 아니면 dict로 감쌀 이유가 없다.</li>
+            <li>오히려 dict로 모으면 필터링·정렬을 할 때마다 <code>.items()</code>로 풀어야 해서 코드가 한 단계씩 더 길어진다.</li>
+          </ol>
+          <div class="land">→ <b>results = []</b>로 시작해서 반복문 안에서 필드를 뽑아 dict로 묶어 <code>append</code>하고, 이후 필터는 컴프리헨션으로, 정렬은 <code>sorted(key=lambda)</code>로 그 list 위에서 처리한다.</div>
+        </div>
+
+        <div class="decision-cards">
+          <div class="dcard"><div class="kind">질문 1</div><p>레코드(제목+가격+별점처럼 <b>필드가 여러 개인 묶음</b>) 하나짜리인가, 여러 개인가?</p><div class="ex">하나 → dict / 여러 개 → list</div></div>
+          <div class="dcard"><div class="kind">질문 2</div><p>나중에 "이 키에 해당하는 값을 즉시 찾고" 싶은가, 아니면 그냥 순서대로 다 훑으면 되는가?</p><div class="ex">즉시 조회 → dict(고유값을 key로) / 순회만 → list</div></div>
+        </div>
+
+        <div class="grid-wrap">
+          <table class="grid">
+            <thead><tr><th>상황</th><th>자료구조</th><th>쌓는 코드</th><th>저장 방식</th></tr></thead>
+            <tbody>
+              <tr><td>값 하나만 여러 개 (제목만, 이름만…)</td><td><code>list</code></td><td><code>titles.append(title)</code></td><td>txt 한 줄씩, CSV 한 컬럼</td></tr>
+              <tr><td>필드 여러 개인 레코드가 여러 개 (가장 흔한 크롤링 결과)</td><td><code>list[dict]</code></td><td><code>results.append({"제목":..,"가격":..})</code></td><td><code>csv.DictWriter</code></td></tr>
+              <tr><td>레코드가 <b>하나뿐</b>이고 그 자체가 key-value (예: 환율 하나)</td><td><code>dict</code></td><td><code>result["KRW"] = 1385.2</code></td><td><code>json.dump</code></td></tr>
+              <tr><td>여러 개를 모으되, 나중에 특정 항목을 <b>즉시 조회</b>해야 함</td><td><code>dict</code> (고유값이 key)</td><td><code>result[username] = {...}</code></td><td><code>json.dump</code></td></tr>
+              <tr><td>레코드 하나 안에 다시 목록이 있음 (유저 1명 + 그 유저 게시글 여러 개)</td><td>중첩 — <code>dict</code> 안에 <code>list[dict]</code></td><td><code>result["posts"].append({...})</code></td><td><code>json.dump</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p><b>같은 데이터, 목적에 따라 그릇이 달라지는 예</b> — question03(5개 도시 날씨)를 예로 들면, "최고/최저 도시 찾기"만 할 거면 list[dict]로 충분하지만, "부산 온도만 바로 알고 싶다"가 목적이라면 dict가 훨씬 짧아집니다.</p>
+
+        <div class="vs-grid">
+          <div>
+            <div class="vs-label good">list[dict] — 순서대로 훑거나, 최댓값·최솟값 찾을 때 유리</div>
+            <div class="code"><pre>city_weather = []
+city_weather.append({<span class="s">"city"</span>:<span class="s">"Busan"</span>, <span class="s">"temp"</span>:<span class="n">27.1</span>})
+city_weather.append({<span class="s">"city"</span>:<span class="s">"Seoul"</span>, <span class="s">"temp"</span>:<span class="n">29.5</span>})
+
+hot = <span class="fn">max</span>(city_weather, key=<span class="k">lambda</span> x: x[<span class="s">"temp"</span>])
+<span class="c"># 부산 온도만 알고 싶으면 -> 반복문으로 찾아야 함</span>
+busan = <span class="fn">next</span>(x <span class="k">for</span> x <span class="k">in</span> city_weather <span class="k">if</span> x[<span class="s">"city"</span>]==<span class="s">"Busan"</span>)</pre></div>
+          </div>
+          <div>
+            <div class="vs-label good">dict(도시명이 key) — 특정 도시를 바로 조회할 때 유리</div>
+            <div class="code"><pre>city_weather = {}
+city_weather[<span class="s">"Busan"</span>] = {<span class="s">"temp"</span>:<span class="n">27.1</span>}
+city_weather[<span class="s">"Seoul"</span>] = {<span class="s">"temp"</span>:<span class="n">29.5</span>}
+
+<span class="c"># 반복문 없이 바로 접근</span>
+busan = city_weather[<span class="s">"Busan"</span>]
+<span class="c"># 최댓값은 .items()로 튜플을 만들어야 함 (조금 더 번거로움)</span>
+hot = <span class="fn">max</span>(city_weather.items(), key=<span class="k">lambda</span> x: x[<span class="s">1</span>][<span class="s">"temp"</span>])</pre></div>
+          </div>
+        </div>
+        <p style="font-size:0.9rem; color:var(--ink-soft);">→ 즉, <b>"여러 항목 중 극값을 찾거나 순서가 중요하다"면 list[dict]</b>가, <b>"특정 하나를 이름으로 바로 꺼내 써야 한다"면 dict</b>가 코드를 더 짧게 만듭니다. 둘 다 필요하면(둘 다 자주 한다면) list[dict]로 모은 뒤 필요할 때만 <code>{x["city"]: x for x in city_weather}</code>로 dict를 하나 더 만들어도 됩니다.</p>
+
+        <h4 style="font-family:var(--font-mono); font-size:0.8rem; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink-soft); margin:26px 0 10px;">자주 하는 실수 — question01에서 실제로 겪은 것</h4>
+        <div class="mistake"><span class="x">✗</span> <code>book_result = {}</code>로 만들고 <code>book_result[idx] = {...}</code>로 채운 뒤 <code>csv.DictWriter.writerows(book_result)</code>를 호출 — 딕셔너리를 그대로 <code>writerows()</code>에 넣으면 <b>key(순번)만</b> 한 줄씩 써집니다. <code>writerows()</code>는 <b>딕셔너리들의 리스트</b>를 기대하는데 딕셔너리 하나를 순회시켜버린 것. <span style="color:var(--ok)">→</span> 애초에 <code>book_result = []</code>로 시작해서 <code>append({...})</code>로 쌓아야 합니다.</div>
+        <div class="mistake"><span class="x">✗</span> 안쪽 딕셔너리의 key(<code>title</code>, <code>price</code>)와 <code>DictWriter(fieldnames=["제목","가격"])</code>의 이름이 다르면, 에러 없이 그 컬럼이 <b>빈 칸으로</b> 저장됩니다. <span style="color:var(--ok)">→</span> 딕셔너리를 만들 때부터 key를 fieldnames와 <b>정확히</b> 맞춰야 합니다.</div>
+        <div class="mistake"><span class="x">✗</span> 같은 key로 <code>dict[key] = 값</code>을 반복하면 이전 값이 <b>조용히 덮어써집니다</b>(에러 없음). 같은 도시를 두 번 크롤링하면 첫 번째 결과가 사라짐 — 여러 번 쌓아야 한다면 dict가 아니라 list여야 합니다.</div>
+      </div>
+
+      <!-- ================= PART 2 ================= -->
+      <div class="part"><span class="n">PART 2</span><h2>정적 페이지 크롤링</h2><div class="ln"></div></div>
+      <p class="part-desc">chapter03. requests(또는 urllib)로 HTML을 받아 BeautifulSoup으로 원하는 조각만 뽑아내는 흐름 — 브라우저 자동화가 필요 없어 가장 빠르고 가볍습니다.</p>
+
+      <section class="topic" id="s-download" style="--cat:var(--cat-static); --cat-soft:var(--cat-static-soft);">
+        <span class="tag"><span class="d"></span>ch03 · scrap01~02.py</span>
+        <h3>다운로드 · 파싱 기초</h3>
+        <div class="concept"><span class="eb">개념</span><p>크롤링은 보통 두 단계: <b>① 다운로드</b>(HTML/파일을 로컬로) → <b>② 파싱</b>(받은 텍스트에서 정보 추출). <code>urllib.request</code>가 ①을, <code>BeautifulSoup</code>이 ②를 맡습니다. BeautifulSoup은 HTML 문자열을 <b>트리 구조 객체</b>로 바꿔줍니다.</p></div>
+        <div class="code"><div class="bar"><span>scrap01.py</span><span></span></div><pre><span class="c"># 방법1: 요청+저장 한 번에</span>
+dw.urlretrieve(imgUrl, savePath1)
+<span class="c"># 방법3: with문으로 자원까지 안전하게 (권장)</span>
+f2 = dw.urlopen(htmlURL).read()
+<span class="k">with</span> <span class="fn">open</span>(savePath2, <span class="s">'wb'</span>) <span class="k">as</span> f:
+    f.write(f2)</pre></div>
+        <div class="code"><div class="bar"><span>scrap02.py</span><span>select_one 결합자</span></div><pre>soup.select_one(<span class="s">"#gr"</span>)          <span class="c"># id가 gr (태그 종류 무관)</span>
+soup.select_one(<span class="s">"li#gr"</span>)        <span class="c"># li 태그 + id gr 동시조건</span>
+soup.select_one(<span class="s">"ul>#gr"</span>)       <span class="c"># ul의 직계자식 중 id gr</span>
+soup.select_one(<span class="s">"#cars #gr"</span>)    <span class="c"># cars 아래 몇 단계든 id gr</span></pre></div>
+        <div class="mistake"><span class="x">✗</span> XPath 문법(<code>//*[@id='gr']</code>)을 <code>select_one</code>에 쓰면 에러 — bs4의 select 계열은 <b>CSS 선택자만</b> 지원합니다.</div>
+      </section>
+
+      <section class="topic" id="s-tree" style="--cat:var(--cat-static); --cat-soft:var(--cat-static-soft);">
+        <span class="tag"><span class="d"></span>ch03 · scrap03.py</span>
+        <h3>트리 탐색 — 점(.)으로 이동</h3>
+        <div class="code"><pre>h1 = soup.html.body.h1
+p1 = soup.html.body.p
+p2 = p1.next_sibling.next_sibling   <span class="c"># 두 번 해야 진짜 다음 &lt;p&gt;</span></pre></div>
+        <div class="mistake"><span class="x">✗</span> 태그 사이 줄바꿈/공백도 텍스트 노드라서 형제로 계산됩니다. <code>next_sibling</code> 한 번은 <code>'\n'</code>을 주므로 두 번 호출해야 진짜 다음 태그입니다. 이 함정 때문에 실무에선 <code>select()</code>를 더 많이 씁니다.</div>
+      </section>
+
+      <section class="topic" id="s-find" style="--cat:var(--cat-static); --cat-soft:var(--cat-static-soft);">
+        <span class="tag"><span class="d"></span>ch03 · scrap04·11.py</span>
+        <h3>find() 완전정리</h3>
+        <div class="concept"><span class="eb">개념</span><p>태그명+속성(딕셔너리/키워드)으로 조건을 짭니다. 여러 개 맞아도 <b>첫 번째 하나만</b>, 없으면 <b><code>None</code></b>(에러 없음).</p></div>
+        <div class="code"><pre>soup.find_all(<span class="s">"a"</span>, string=<span class="s">"daum"</span>)                 <span class="c"># 텍스트로 필터</span>
+soup.find_all(<span class="s">"a"</span>, string=[<span class="s">"naver"</span>,<span class="s">"daum"</span>])   <span class="c"># 여러 텍스트 중 하나(OR)</span>
+soup.find_all(<span class="s">"a"</span>, limit=<span class="n">2</span>)                       <span class="c"># 앞 2개까지만</span>
+soup.find(<span class="s">"a"</span>, href=re.compile(<span class="s">"^https"</span>))           <span class="c"># 정규식 매칭</span></pre></div>
+        <div class="mistake"><span class="x">✗</span> <code>class</code>는 파이썬 예약어라 <code>find("div", class="x")</code>는 <b>SyntaxError</b>(실행조차 안 됨). <span style="color:var(--ok)">→</span> <code>class_="x"</code>(언더스코어) 또는 <code>{"class":"x"}</code> 딕셔너리로 우회.</div>
+        <div class="grid-wrap"><table class="grid"><thead><tr><th></th><th>반환</th><th>못 찾으면</th></tr></thead><tbody>
+          <tr><td><code>find()</code></td><td>태그 1개</td><td><code>None</code></td></tr>
+          <tr><td><code>find_all()</code></td><td>리스트</td><td>빈 리스트 <code>[]</code></td></tr>
+        </tbody></table></div>
+      </section>
+
+      <section class="topic" id="s-select" style="--cat:var(--cat-static); --cat-soft:var(--cat-static-soft);">
+        <span class="tag"><span class="d"></span>ch03 · scrap04·05·12.py</span>
+        <h3>select() 완전정리</h3>
+        <div class="concept"><span class="eb">개념</span><p><code>select()</code>/<code>select_one()</code>은 웹 개발의 <b>CSS 선택자 문자열</b>을 그대로 씁니다. 개발자도구 "검사"로 얻은 문자열을 거의 그대로 붙여쓸 수 있습니다.</p></div>
+        <div class="grid-wrap"><table class="grid"><thead><tr><th>선택자</th><th>의미</th></tr></thead><tbody>
+          <tr><td><code>.class</code> / <code>태그.class</code></td><td>class로 찾기 / 태그+class 동시조건</td></tr>
+          <tr><td><code>A B</code>(공백)</td><td>A 후손 중 B</td></tr>
+          <tr><td><code>A&gt;B</code></td><td>A 직계자식 중 B</td></tr>
+          <tr><td><code>:nth-of-type(n)</code></td><td>같은 태그 중 n번째</td></tr>
+        </tbody></table></div>
+        <div class="code"><div class="bar"><span>scrap12.py</span><span></span></div><pre>books = soup.select(<span class="s">"article.product_pod"</span>, limit=<span class="n">10</span>)
+
+<span class="k">for</span> book <span class="k">in</span> books:
+    title = book.select_one(<span class="s">"h3 a"</span>)[<span class="s">"title"</span>]
+    price = book.select_one(<span class="s">"p.price_color"</span>).text
+    rating = book.select_one(<span class="s">"p.star-rating"</span>)[<span class="s">"class"</span>][<span class="n">1</span>]  <span class="c"># class 속성은 리스트로 옴</span></pre></div>
+        <div class="mistake"><span class="x">✗</span> <code>select()</code>는 <b>항상 리스트</b>입니다. <code>select("...").text</code>처럼 바로 부르면 <code>AttributeError</code>. 여러 개면 반복문, 하나만 확신하면 <code>select_one()</code>.</div>
+        <div class="mistake"><span class="x">✗</span> 클래스명 오타는 에러 없이 <b>빈 리스트</b>를 줘서 반복문이 조용히 한 번도 안 돕니다. 의심되면 <code>print(len(결과))</code>로 개수부터 확인.</div>
+      </section>
+
+      <section class="topic" id="s-urlparse" style="--cat:var(--cat-static); --cat-soft:var(--cat-static-soft);">
+        <span class="tag"><span class="d"></span>ch03 · scrap04·06.py</span>
+        <h3>urllib.parse & urljoin</h3>
+        <div class="grid-wrap"><table class="grid"><thead><tr><th>함수</th><th>방향</th></tr></thead><tbody>
+          <tr><td><code>urlencode(dict)</code></td><td>딕셔너리 → 쿼리 문자열</td></tr>
+          <tr><td><code>urlparse(url)</code></td><td>URL → 구성요소</td></tr>
+          <tr><td><code>urljoin(base, relative)</code></td><td>기준 URL + 상대경로 → 절대 URL</td></tr>
+        </tbody></table></div>
+        <div class="code"><pre><span class="k">from</span> urllib.parse <span class="k">import</span> urljoin
+baseUrl = <span class="s">"http://test.com/html/a.html"</span>
+<span class="fn">print</span>(urljoin(baseUrl, <span class="s">"sub/c.html"</span>))     <span class="c"># http://test.com/html/sub/c.html</span>
+<span class="fn">print</span>(urljoin(baseUrl, <span class="s">"../index.html"</span>))  <span class="c"># http://test.com/index.html</span></pre></div>
+        <div class="note">페이지 안 링크가 <code>href="sub/c.html"</code>처럼 상대경로인 경우가 많은데, <code>urljoin</code>으로 실제 요청 가능한 절대 URL로 바꿔줍니다.</div>
+      </section>
+
+      <section class="topic" id="s-headers" style="--cat:var(--cat-static); --cat-soft:var(--cat-static-soft);">
+        <span class="tag"><span class="d"></span>ch03 · scrap07·08·10.py</span>
+        <h3>헤더 조작 & requests</h3>
+        <div class="concept"><span class="eb">개념</span><p>요청엔 "나는 이런 브라우저다"라는 <code>User-Agent</code> 헤더가 실립니다. 헤더 없이 기본으로 요청하면 일부 사이트는 봇으로 판단해 <b>403/406</b>으로 막습니다.</p></div>
+        <div class="grid-wrap"><table class="grid"><thead><tr><th>urllib.request</th><th>requests</th></tr></thead><tbody>
+          <tr><td><code>Request()</code> + <code>urlopen()</code></td><td><code>requests.get(url, headers=...)</code></td></tr>
+          <tr><td><code>mem.read().decode()</code></td><td><code>res.text</code></td></tr>
+          <tr><td>직접 <code>json.loads()</code></td><td><code>res.json()</code></td></tr>
+        </tbody></table></div>
+        <div class="code"><div class="bar"><span>scrap10.py</span><span>requests가 더 간편한 이유</span></div><pre><span class="k">import</span> requests
+res = requests.get(url, headers=headers)      <span class="c"># urlopen(req) 한 줄로</span>
+soup = BeautifulSoup(res.text, <span class="s">"html.parser"</span>)  <span class="c"># res.text = 이미 디코딩된 문자열</span>
+data = res.json()                              <span class="c"># JSON이면 바로 딕셔너리로</span></pre></div>
+        <div class="note warn"><span class="lbl">진짜 API 찾는 법</span>교재/블로그 URL이 항상 살아있진 않습니다. 안 되면 실제 사이트에서 F12 → <b>Network 탭</b> → 원하는 동작 실행 → 진짜 데이터를 담은 요청 주소를 찾아 직접 씁니다.</div>
+      </section>
+
+      <section class="topic" id="s-static3" style="--cat:var(--cat-static); --cat-soft:var(--cat-static-soft);">
+        <span class="tag"><span class="d"></span>ch03 · scrap09 · 멜론 · 동행복권</span>
+        <h3>실전 3제 — 새 사이트 표준 순서</h3>
+        <p><b>① 서버 렌더링인지 확인</b>(원본 HTML에 데이터가 이미 있는지) → <b>② 브라우저 검사로 클래스 찾기</b> → <b>③ 행 단위로 반복문 돌며 추출</b>. JS 렌더링 사이트면 ①에서 막히고, Network 탭에서 실제 API를 찾아 직접 호출합니다.</p>
+        <div class="code"><div class="bar"><span>① meta 정보 — encar.com</span><span></span></div><pre>description = soup.select_one(<span class="s">'meta[name="description"]'</span>)
+<span class="fn">print</span>(description.get(<span class="s">"content"</span>) <span class="k">if</span> description <span class="k">else</span> <span class="s">"없음"</span>)</pre></div>
+        <div class="note"><code>&lt;meta&gt;</code>는 텍스트가 없고 <code>content</code> 속성에 값이 있어 <code>.text</code>가 아니라 <code>.get("content")</code>. <code>if description else</code>는 <code>select_one()</code>이 <code>None</code>일 때 <code>AttributeError</code>를 막는 방어 패턴입니다.</div>
+        <div class="code"><div class="bar"><span>② 행 단위 + dict — 멜론차트</span><span>등수를 key로 쓰는 dict</span></div><pre>ranking = {}
+rows = soup.select(<span class="s">"tr.lst50"</span>)
+<span class="k">for</span> i, row <span class="k">in</span> <span class="fn">enumerate</span>(rows[:<span class="n">10</span>], start=<span class="n">1</span>):
+    title = row.select_one(<span class="s">".rank01 a"</span>).get_text(strip=<span class="k">True</span>)
+    artist = row.select_one(<span class="s">".rank02 a"</span>).get_text(strip=<span class="k">True</span>)
+    ranking[i] = {<span class="s">"title"</span>: title, <span class="s">"artist"</span>: artist}</pre></div>
+        <div class="note"><code>row.select_one(...)</code>처럼 <b>행 안에서 다시 찾는 이유</b>는 제목·가수가 같은 <code>&lt;tr&gt;</code> 안에 있어야 순서가 안 어긋나기 때문. 등수를 dict 키로 쓴 건 "몇 등"으로 즉시 조회하고 싶어서 — <a href="#datastruct">앞의 자료구조 기준</a>대로면 '조회용'이라 dict가 자연스러운 선택입니다.</div>
+      </section>
+
+      <!-- ================= PART 3 ================= -->
+      <div class="part"><span class="n">PART 3</span><h2>브라우저 자동화</h2><div class="ln"></div></div>
+      <p class="part-desc">chapter04. 로그인이 필요하거나 스크롤·클릭 후에야 데이터가 뜨는 <b>동적 페이지</b>용. 진짜 브라우저를 띄워 사람처럼 조작합니다.</p>
+
+      <section class="topic" id="s-selenium" style="--cat:var(--cat-browser); --cat-soft:var(--cat-browser-soft);">
+        <span class="tag"><span class="d"></span>ch04 · selenium04~06 · waitDriverWait06</span>
+        <h3>Selenium — sleep에서 WebDriverWait로</h3>
+        <div class="flow"><div class="st"><span class="n">1</span>driver 띄우기</div><span class="ar"></span><div class="st"><span class="n">2</span>get(url)</div><span class="ar"></span><div class="st"><span class="n">3</span>입력+클릭</div><span class="ar"></span><div class="st"><span class="n">4</span>대기</div><span class="ar"></span><div class="st"><span class="n">5</span>추출</div><span class="ar"></span><div class="st"><span class="n">6</span>quit()</div></div>
+        <div class="concept"><span class="eb">개념</span><p>클릭한다고 다음 페이지가 바로 완성되지 않습니다. 처음엔 무조건 몇 초 기다리는 <code>time.sleep</code>을 쓰지만, 느린 날엔 부족하고 빠른 날엔 낭비입니다. <b>WebDriverWait</b>는 "이 조건이 참이 될 때까지만" 기다려 더 안정적입니다.</p></div>
+        <div class="think">
+          <span class="think-label">사고 흐름</span>
+          <ol>
+            <li>로그인 버튼을 클릭한 다음 무슨 일이 벌어지는지 생각해본다 — 페이지 이동, 새 DOM 로딩, 네트워크 요청까지 걸리는 시간은 매번 다르다.</li>
+            <li>일단 <code>time.sleep(3)</code>으로 3초를 준다 — 로컬에서 몇 번 돌려보니 되는 것 같다.</li>
+            <li>근데 이 3초라는 숫자가 어디서 왔는지 자문해본다 — 방금 내 네트워크 속도로 몇 번 테스트해본 값일 뿐, 서버가 느린 날이나 다른 PC에서 돌릴 땐 근거가 없다.</li>
+            <li>더 큰 문제도 보인다 — 3초보다 빨리 끝나도 코드는 그대로 3초를 낭비하고, 3초보다 느리면 아직 없는 요소를 찾다가 예외가 난다. "고정된 시간"과 "실제로 준비됐는지"는 다른 것이다.</li>
+            <li>그러면 진짜 필요한 건 시간이 아니라 조건이다 — "이 요소가 DOM에 나타날 때까지"를 코드로 표현할 방법을 찾는다.</li>
+            <li>WebDriverWait + expected_conditions가 정확히 그 역할이다 — 조건이 참이 될 때까지만 기다리고, 끝내 안 되면 타임아웃으로 명확하게 실패한다.</li>
+          </ol>
+          <div class="land">→ <b>email = wait.until(EC.presence_of_element_located(...))</b>처럼, "몇 초 기다릴지"가 아니라 "무엇이 준비됐는지"를 조건으로 건다.</div>
+        </div>
+        <div class="code"><div class="bar"><span>1단계 — time.sleep</span><span>불안정</span></div><pre>driver.get(<span class="s">"https://auth.example.com/login"</span>)
+time.sleep(<span class="n">3</span>)   <span class="c"># 다 뜨든 안 뜨든 무조건 3초</span>
+driver.find_element(By.NAME, <span class="s">"emailOrId"</span>).send_keys(ID)
+driver.find_element(By.XPATH, LOGIN_BUTTON_XPATH).click()
+time.sleep(<span class="n">3</span>)</pre></div>
+        <div class="code"><div class="bar"><span>2단계 — WebDriverWait</span><span>안정적</span></div><pre><span class="k">from</span> selenium.webdriver.support.ui <span class="k">import</span> WebDriverWait
+<span class="k">from</span> selenium.webdriver.support <span class="k">import</span> expected_conditions <span class="k">as</span> EC
+
+wait = WebDriverWait(driver, <span class="n">10</span>)
+email = wait.until(EC.presence_of_element_located((By.NAME, <span class="s">"emailOrId"</span>)))
+email.send_keys(ID)
+
+login_btn = wait.until(EC.element_to_be_clickable((By.XPATH, LOGIN_BUTTON_XPATH)))
+before_url = driver.current_url
+login_btn.click()
+wait.until(EC.url_changes(before_url))   <span class="c"># 클릭 후 실제로 이동했는지 확인</span></pre></div>
+        <div class="mistake"><span class="x">✗</span> <b>실전에서 걸렸던 함정</b> — <code>url_contains("wishket.com")</code>으로 로그인 완료를 확인하려 했는데, 로그인 <i>페이지</i> 주소에도 이미 "wishket.com"이 들어있어서 클릭 직후(아직 이동 전)에도 조건이 바로 통과해버렸습니다. <span style="color:var(--ok)">→</span> <code>url_changes(before_url)</code>로 "클릭 전과 달라졌는지"를 확인하는 방식으로 교체.</div>
+        <div class="grid-wrap"><table class="grid"><thead><tr><th>조건 함수</th><th>기다리는 것</th></tr></thead><tbody>
+          <tr><td><code>presence_of_element_located</code></td><td>요소가 DOM에 나타남</td></tr>
+          <tr><td><code>element_to_be_clickable</code></td><td>요소가 클릭 가능한 상태</td></tr>
+          <tr><td><code>url_changes(이전주소)</code></td><td>주소가 이전 값과 달라짐</td></tr>
+          <tr><td><code>url_contains(문자열)</code></td><td>주소에 문자열 포함 — 로그인 페이지 주소에도 같은 문자열이 있으면 오작동할 수 있음</td></tr>
+        </tbody></table></div>
+      </section>
+
+      <section class="topic" id="s-playwright" style="--cat:var(--cat-browser); --cat-soft:var(--cat-browser-soft);">
+        <span class="tag"><span class="d"></span>ch04 · playwright06~09.py</span>
+        <h3>Playwright</h3>
+        <div class="concept"><span class="eb">개념</span><p>Selenium과 목적은 같지만, <code>with</code> 블록 하나로 브라우저 생명주기를 관리하고 문법이 더 간결합니다. 통계값 같은 걸 <b>절대 위치(몇 번째 자식)</b>로 찾으면 배너 하나만 추가돼도 위치가 밀려 못 찾게 됩니다 — <b>라벨 텍스트 기준</b>으로 찾으면 레이아웃이 바뀌어도 안정적입니다.</p></div>
+        <div class="code"><div class="bar"><span>playwright08.py 형태</span><span></span></div><pre><span class="k">from</span> playwright.sync_api <span class="k">import</span> sync_playwright
+
+<span class="k">with</span> sync_playwright() <span class="k">as</span> p:
+    browser = p.chromium.launch(headless=<span class="k">False</span>)
+    page = browser.new_page(viewport={<span class="s">"width"</span>:<span class="n">1920</span>,<span class="s">"height"</span>:<span class="n">1080</span>})
+    page.goto(<span class="s">"https://auth.example.com/login"</span>)
+    page.wait_for_timeout(<span class="n">3000</span>)   <span class="c"># 밀리초 단위</span>
+
+    page.fill(<span class="s">'input[name="emailOrId"]'</span>, ID)
+    page.fill(<span class="s">'input[name="password"]'</span>, PW)
+    page.click(<span class="k">f</span><span class="s">"xpath={LOGIN_BUTTON_XPATH}"</span>)
+    page.wait_for_timeout(<span class="n">3000</span>)
+
+    <span class="c"># 절대경로 xpath 대신 라벨 텍스트로 앵커링</span>
+    result = page.locator(<span class="s">".box .label"</span>, has_text=<span class="s">"찾는 라벨"</span>).locator(<span class="s">"p"</span>).inner_text()
+    browser.close()</pre></div>
+        <div class="note">Selenium의 WebDriverWait과 같은 개념이 Playwright에도 있습니다(<code>page.wait_for_selector(...)</code>). 아직 <code>wait_for_timeout</code>(무조건 대기)만 써봤다면, 다음 단계로 이걸 명시적 대기로 바꾸는 연습이 좋습니다.</div>
+      </section>
+
+      <section class="topic" id="s-combo" style="--cat:var(--cat-browser); --cat-soft:var(--cat-browser-soft);">
+        <span class="tag"><span class="d"></span>ch04 · scrap01~03(ch04) · img03.py</span>
+        <h3>콤보 패턴 — 목록은 브라우저로, 파일은 requests로</h3>
+        <div class="flow"><div class="st"><span class="n">1</span>브라우저로 렌더</div><span class="ar"></span><div class="st"><span class="n">2</span>src 주소만 수집</div><span class="ar"></span><div class="st"><span class="n">3</span>requests.get().content</div><span class="ar"></span><div class="st"><span class="n">4</span>파일로 저장</div></div>
+        <div class="concept"><span class="eb">개념</span><p><code>&lt;img src="..."&gt;</code>의 <code>src</code>는 이미지가 <b>어디 있는지 알려주는 주소 문자열</b>일 뿐, 이미지 파일 자체가 아닙니다. 브라우저는 이 주소를 보고 알아서 그려주지만, 우리 코드는 주소 텍스트만 손에 쥔 상태입니다.</p></div>
+        <div class="think">
+          <span class="think-label">사고 흐름</span>
+          <ol>
+            <li>브라우저로 검색 결과 페이지를 열면 이미지가 화면에 잘 보인다 — "다 보이니까 이미 다 있는 거 아닌가" 하는 생각이 먼저 든다.</li>
+            <li>근데 화면에 보이는 건 브라우저가 <code>&lt;img src="..."&gt;</code>를 읽고 그 주소로 따로 요청을 보내 그린 결과다 — 페이지 자체엔 파일이 없고 "어디 있는지 알려주는 주소 문자열"만 있다.</li>
+            <li><code>page.query_selector_all("img")</code>로 얻는 것도 마찬가지다 — <code>img.get_attribute("src")</code>는 문자열 하나일 뿐, 그 문자열을 그냥 파일에 써봐야 이미지가 생기지 않는다.</li>
+            <li>그러면 "주소를 안다"와 "파일을 갖고 있다" 사이에 한 단계가 더 필요하다는 게 보인다 — 그 주소로 새로운 요청을 한 번 더 보내야 진짜 바이트가 온다.</li>
+            <li>미리보기 이미지는 <code>data:image/...</code>로 오기도 한다는 것도 이 시점에 같이 정리된다 — <code>http</code>로 시작하는 진짜 주소만 걸러야 한다.</li>
+            <li>결론적으로 브라우저 단계(주소 수집)와 requests 단계(다운로드)는 하나의 반복문으로 합칠 게 아니라 분리해야 한다 — 브라우저를 계속 띄워둔 채로 매번 다운로드까지 하면 느리고 불안정하다.</li>
+          </ol>
+          <div class="land">→ 1단계에서 <b>urls 리스트</b>를 다 모은 뒤, 2단계에서 따로 반복문을 돌며 <code>requests.get(url).content</code>로 바이트를 받아 파일에 쓴다.</div>
+        </div>
+        <div class="code"><div class="bar"><span>img03.py 형태</span><span>Playwright + requests</span></div><pre><span class="k">with</span> sync_playwright() <span class="k">as</span> p:
+    browser = p.chromium.launch(headless=<span class="k">False</span>)
+    page = browser.new_page()
+    page.goto(SEARCH_URL); page.wait_for_timeout(<span class="n">3000</span>)
+
+    imgs = page.query_selector_all(<span class="s">"img"</span>)
+    urls = [img.get_attribute(<span class="s">"src"</span>) <span class="k">for</span> img <span class="k">in</span> imgs]
+    urls = [u <span class="k">for</span> u <span class="k">in</span> urls <span class="k">if</span> u <span class="k">and</span> u.startswith(<span class="s">"http"</span>)]  <span class="c"># data: 미리보기 제외</span>
+    browser.close()
+
+<span class="c"># 주소를 안다고 파일이 저장되는 게 아니라, 그 주소로 새 요청을 한 번 더</span>
+<span class="k">for</span> i, url <span class="k">in</span> <span class="fn">enumerate</span>(urls[:<span class="n">20</span>], start=<span class="n">1</span>):
+    data = requests.get(url, timeout=<span class="n">5</span>).content   <span class="c"># .content = 바이너리 그대로</span>
+    <span class="k">with</span> <span class="fn">open</span>(<span class="k">f</span><span class="s">"{i}.jpg"</span>, <span class="s">"wb"</span>) <span class="k">as</span> f:
+        f.write(data)</pre></div>
+        <div class="mistake"><span class="x">✗</span> 검색결과 미리보기 이미지는 <code>src</code>가 <code>http...</code>가 아니라 <code>data:image/...</code>(이미 인코딩된 자리표시자)로 오는 경우가 있어, <code>startswith("http")</code>로 걸러내야 진짜 원본 주소만 남습니다.</div>
+      </section>
+
+      <!-- ================= PART 4 ================= -->
+      <div class="part"><span class="n">PART 4</span><h2>실전 API 연동</h2><div class="ln"></div></div>
+      <p class="part-desc">chapter05. 기상청·GitHub·Frankfurter·RandomUser 같은 실제 API로 요청→가공→저장 한 사이클을 반복 연습했습니다.</p>
+
+      <section class="topic" id="s-apibasic" style="--cat:var(--cat-api); --cat-soft:var(--cat-api-soft);">
+        <span class="tag"><span class="d"></span>ch05 · randomuser03~04.py</span>
+        <h3>JSON API 호출의 기본 골격</h3>
+        <p>API가 달라도, JSON을 주는 API는 항상 <b>요청 → <code>.json()</code>으로 파싱 → 딕셔너리에서 값 꺼내기</b> 순서가 같습니다.</p>
+        <div class="code"><div class="bar"><span>randomuser03.py — 최소형</span><span></span></div><pre>res = requests.get(<span class="s">"https://randomuser.me/api/"</span>)
+data = res.json()
+user = data[<span class="s">'results'</span>][<span class="n">0</span>]   <span class="c"># 결과가 리스트라 [0]으로 첫 번째만</span></pre></div>
+        <div class="code"><div class="bar"><span>randomuser04.py — 실전형</span><span>params + 함수 + 반복</span></div><pre><span class="k">def</span> get_random_users(count=<span class="n">5</span>):
+    res = requests.get(url, params={<span class="s">"results"</span>: count})
+    res.raise_for_status()     <span class="c"># 실패면 바로 예외 — 안 넣으면 조용히 다음 줄로 넘어감</span>
+    <span class="k">return</span> res.json()[<span class="s">'results'</span>]</pre></div>
+        <div class="note"><code>res.raise_for_status()</code>가 없으면 실패한 응답도 "성공한 척" 다음 줄로 넘어가서, 엉뚱한 곳에서 <code>KeyError</code>가 나 원인 찾기 어려워집니다.</div>
+      </section>
+
+      <section class="topic" id="s-xml" style="--cat:var(--cat-api); --cat-soft:var(--cat-api-soft);">
+        <span class="tag"><span class="d"></span>ch05 · weather01.py</span>
+        <h3>XML API는 조금 다르다 — BeautifulSoup + CDATA</h3>
+        <p>공공기관 API(기상청)는 JSON 대신 <b>XML</b>을 주는 경우가 많아 <code>.json()</code> 대신 BeautifulSoup 파싱이 필요합니다.</p>
+        <div class="code"><pre>res = req.urlopen(req.Request(url, headers=headers)).read().decode(<span class="s">'utf-8'</span>)
+soup = BeautifulSoup(res, <span class="s">'html.parser'</span>)
+week_title = week.find(<span class="k">f</span><span class="s">"week{idx}_weather_review"</span>).get_text(strip=<span class="k">True</span>)
+week_title = week_title.replace(<span class="s">"&lt;br&gt;"</span>, <span class="s">" "</span>)   <span class="c"># CDATA 안 글자라 직접 치환</span></pre></div>
+        <div class="note"><code>&lt;![CDATA[ ... ]]&gt;</code> 안의 내용은 어떤 파서든 <b>그냥 텍스트</b>로 취급합니다. 그 안에 <code>&lt;br&gt;</code> 같은 게 있어도 진짜 태그가 아니라 글자 그 자체라, <code>get_text()</code>로는 못 지우고 <code>.replace()</code>/<code>re.sub</code>로 직접 치환해야 합니다.</div>
+      </section>
+
+      <section class="topic" id="s-zip" style="--cat:var(--cat-api); --cat-soft:var(--cat-api-soft);">
+        <span class="tag"><span class="d"></span>ch05 · weather02.py</span>
+        <h3>zip() — 여러 리스트를 동시에 순회</h3>
+        <p>Open-Meteo API는 시간 리스트와 기온 리스트를 <b>서로 다른 두 배열</b>로 따로 줍니다. 같은 순서로 짝지으려면 <code>zip()</code>이 필요합니다.</p>
+        <div class="code"><pre>times = data[<span class="s">"hourly"</span>][<span class="s">'time'</span>]
+temps = data[<span class="s">"hourly"</span>][<span class="s">'temperature_2m'</span>]   <span class="c"># 같은 순서, 같은 길이</span>
+
+<span class="k">for</span> t, temp <span class="k">in</span> zip(times, temps):
+    <span class="fn">print</span>(<span class="k">f</span><span class="s">"{t} : {temp}도"</span>)</pre></div>
+      </section>
+
+      <section class="topic" id="s-minmax" style="--cat:var(--cat-api); --cat-soft:var(--cat-api-soft);">
+        <span class="tag"><span class="d"></span>ch05 · weather02 vs frank06</span>
+        <h3>min() / max() — 단순한 값 vs key=lambda가 필요한 경우</h3>
+        <div class="code"><div class="bar"><span>값 자체가 숫자 리스트</span><span>key 불필요</span></div><pre>temps = [<span class="n">24.1</span>, <span class="n">23.8</span>, <span class="n">25.6</span>]
+<span class="fn">print</span>(<span class="fn">max</span>(temps))   <span class="c"># 값끼리 바로 비교 가능</span></pre></div>
+        <div class="code"><div class="bar"><span>값이 (날짜, 딕셔너리) 튜플</span><span>key=lambda 필요</span></div><pre><span class="c"># 그냥 max(rates.items())를 하면 튜플의 첫 요소(날짜)로 비교돼서</span>
+<span class="c"># "환율이 제일 높은 날"이 아니라 "가장 늦은 날짜"가 나와버림</span>
+max_item = <span class="fn">max</span>(rates.items(), key=<span class="k">lambda</span> x: x[<span class="n">1</span>][<span class="s">'KRW'</span>])</pre></div>
+        <div class="note"><code>key=</code>는 "비교할 때 각 항목에서 어떤 값을 기준으로 삼을지" 알려주는 함수입니다. <code>max()</code>는 그 기준값들을 비교하지만 <b>기준값이 아니라 항목 전체</b>를 돌려줍니다.</div>
+      </section>
+
+      <section class="topic" id="s-sort" style="--cat:var(--cat-api); --cat-soft:var(--cat-api-soft);">
+        <span class="tag"><span class="d"></span>ch05 · frank06.py</span>
+        <h3>딕셔너리 정렬 + 중첩 접근</h3>
+        <div class="code"><pre>sorted_dates = <span class="fn">sorted</span>(rates.keys())   <span class="c"># ISO 형식이라 문자열 정렬 = 날짜순 정렬</span>
+<span class="k">for</span> date <span class="k">in</span> sorted_dates:
+    krw = rates[date][<span class="s">'KRW'</span>]   <span class="c"># rates[date] = {"KRW": 1459.45} -> 한 번 더 파고듦</span></pre></div>
+        <div class="note">날짜가 <code>"2026-07-28"</code>처럼 연-월-일 자릿수 고정 형식(ISO 8601)이면 사전순 문자열 정렬이 곧 날짜순 정렬입니다. (<code>"7/28/2026"</code> 형식이면 이 트릭이 안 통합니다.)</div>
+      </section>
+
+      <section class="topic" id="s-format" style="--cat:var(--cat-api); --cat-soft:var(--cat-api-soft);">
+        <span class="tag"><span class="d"></span>ch05 · github05 / frank06</span>
+        <h3>f-string 숫자 포맷</h3>
+        <div class="grid-wrap"><table class="grid"><thead><tr><th>코드</th><th>의미</th><th>결과</th></tr></thead><tbody>
+          <tr><td><code>{stars:,}</code></td><td>천 단위 쉼표</td><td><code>45230</code> → <code>45,230</code></td></tr>
+          <tr><td><code>{krw:.2f}</code></td><td>소수점 둘째 자리</td><td><code>1459.4523</code> → <code>1459.45</code></td></tr>
+          <tr><td><code>{krw:,.2f}</code></td><td>둘 다 한번에</td><td><code>145940.4523</code> → <code>145,940.45</code></td></tr>
+        </tbody></table></div>
+      </section>
+
+      <section class="topic" id="s-filter" style="--cat:var(--cat-api); --cat-soft:var(--cat-api-soft);">
+        <span class="tag"><span class="d"></span>ch05 · github05.py</span>
+        <h3>리스트 컴프리헨션으로 조건 필터링</h3>
+        <div class="code"><pre>high_star_repos = [r <span class="k">for</span> r <span class="k">in</span> results <span class="k">if</span> r[<span class="s">"star수"</span>] &gt;= <span class="n">10000</span>]
+<span class="c"># 풀어쓰면: for r in results: if r["star수"]>=10000: 리스트에 추가</span></pre></div>
+      </section>
+
+      <section class="topic" id="s-dictwriter" style="--cat:var(--cat-api); --cat-soft:var(--cat-api-soft);">
+        <span class="tag"><span class="d"></span>ch05 · github05 / frank06</span>
+        <h3>딕셔너리 리스트를 CSV로 — csv.DictWriter</h3>
+        <div class="code"><pre><span class="k">with</span> <span class="fn">open</span>(csv_path, <span class="s">"w"</span>, newline=<span class="s">""</span>, encoding=<span class="s">'utf-8-sig'</span>) <span class="k">as</span> f:
+    writer = csv.DictWriter(f, fieldnames=[<span class="s">"날짜"</span>, <span class="s">"환율"</span>])
+    writer.writeheader()      <span class="c"># fieldnames를 첫 줄(헤더)로</span>
+    writer.writerows(results) <span class="c"># 딕셔너리 리스트를 한 번에 여러 줄로 -- results는 list[dict]여야 함</span></pre></div>
+        <div class="grid-wrap"><table class="grid"><tbody>
+          <tr><td>일반 <code>csv.writer</code></td><td>순서가 정해진 리스트/튜플만 받음 — 매번 값을 직접 꺼내 순서를 맞춰야 함</td></tr>
+          <tr><td><code>DictWriter</code></td><td>딕셔너리를 그대로 받아 <code>fieldnames</code> 순서대로 알아서 값을 뽑음</td></tr>
+          <tr><td><code>newline=""</code></td><td>윈도우에서 줄 사이 빈 줄 생기는 것 방지</td></tr>
+          <tr><td><code>encoding='utf-8-sig'</code></td><td>엑셀에서 한글 안 깨지게 BOM 포함</td></tr>
+        </tbody></table></div>
+      </section>
+
+      <section class="topic" id="s-dotenv" style="--cat:var(--cat-api); --cat-soft:var(--cat-api-soft);">
+        <span class="tag"><span class="d"></span>ch05 · weather07.py</span>
+        <h3>.env로 API 키 숨기기</h3>
+        <div class="code"><pre><span class="k">from</span> dotenv <span class="k">import</span> load_dotenv
+<span class="k">import</span> os
+
+load_dotenv()
+API_KEY = os.getenv(<span class="s">"OPENWEATHER_API_KEY"</span>)</pre></div>
+        <div class="note">위시켓 로그인 때 쓴 <code>.env</code> 패턴이 비밀번호뿐 아니라 API 키 같은 다른 비밀값에도 그대로 적용됩니다. <code>load_dotenv()</code>를 <b>호출하는 것을 잊으면</b> import만 하고 실제로 <code>.env</code>를 안 읽어서 <code>API_KEY</code>가 <code>None</code>이 됩니다 — question03에서 실제로 겪은 실수입니다.</div>
+      </section>
+
+      <section class="topic" id="s-frank" style="--cat:var(--cat-api); --cat-soft:var(--cat-api-soft);">
+        <span class="tag"><span class="d"></span>★ 오늘의 대표 파일 · frank06.py</span>
+        <h3>frank06.py — 완전 분석</h3>
+        <p>오늘 배운 개념 대부분(파라미터 있는 API 호출, 정렬, 중첩 딕셔너리 접근, key=lambda min/max, 숫자 포맷 2종, 등락률 계산, CSV 저장)을 <b>한 파일 안에서 처음부터 끝까지</b> 잇는 유일한 파일이라 통째로 뜯어봅니다.</p>
+        <div class="think">
+          <span class="think-label">사고 흐름</span>
+          <ol>
+            <li>최종적으로 뭘 만들어야 하는지부터 정리한다 — 30일치 환율을 날짜순으로 보여주고, 최고·최저를 찾고, 등락률을 계산하고, CSV로 남긴다. 결과물이 네 개, 순서대로 필요하다.</li>
+            <li>API가 데이터를 어떤 모양으로 주는지 확인한다 — <code>rates</code>가 <code>{"2026-07-28": {"KRW": 1459.45}, ...}</code> 형태의 dict다. 날짜로 조회하긴 쉽지만, dict는 순서를 보장하지 않는다.</li>
+            <li>"날짜순으로 보여주기"가 제일 먼저 필요한 결과이니, <code>sorted(rates.keys())</code>로 순서부터 만든다 — 이후 출력, 첫값/끝값 비교까지 전부 이 정렬된 리스트를 기준으로 움직인다.</li>
+            <li>최고·최저는 <code>rates</code>(dict) 자체에서 <code>key=lambda</code>로 바로 찾을 수 있지만, CSV 저장은 <code>DictWriter</code>가 <code>list[dict]</code>를 요구한다 — 그래서 정렬된 순서를 훑는 반복문 한 번으로, 조회용 dict(rates)는 그대로 두고 저장용 list[dict](results)를 동시에 만들어둔다.</li>
+            <li>등락률은 "정렬된 목록의 첫 값과 마지막 값" 차이이므로, <code>sorted_dates[0]</code>/<code>sorted_dates[-1]</code>로 이미 만들어둔 정렬을 그대로 재사용한다 — 정렬을 맨 먼저 해둔 이유가 여기서 또 한 번 드러난다.</li>
+            <li>이 순서(정렬 → 순회하며 출력+누적 → min/max → 등락률 → CSV) 중 하나라도 앞뒤가 바뀌면 뒷 단계가 정렬 안 된 값을 참조하게 되므로, 정렬이 항상 맨 앞에 와야 한다는 게 확정된다.</li>
+          </ol>
+          <div class="land">→ 파일은 <b>날짜 범위 계산 → API 요청 → sorted_dates로 정렬 → 순회하며 rates(dict)는 조회용, results(list[dict])는 저장용으로 병행 → min/max → 등락률 → DictWriter</b> 순서로 구성된다.</div>
+        </div>
+        <div class="code"><div class="bar"><span>1. 날짜 범위 계산</span><span>frank06.py:8-9</span></div><pre>end_date = datetime.now().strftime(<span class="s">"%Y-%m-%d"</span>)
+start_date = (datetime.now() - timedelta(days=<span class="n">30</span>)).strftime(<span class="s">"%Y-%m-%d"</span>)</pre></div>
+        <div class="note"><code>timedelta(days=30)</code>은 "30일만큼의 시간 차이" 객체. <code>now() - timedelta(days=30)</code>은 "30일 전" 시각을 계산하고, <code>strftime</code>으로 문자열로 바꿉니다.</div>
+
+        <div class="code"><div class="bar"><span>2. 요청 + 응답</span><span>frank06.py:11-19</span></div><pre>url = <span class="k">f</span><span class="s">"https://api.frankfurter.dev/v1/{start_date}..{end_date}"</span>
+res = requests.get(url, params={<span class="s">"base"</span>:<span class="s">"USD"</span>, <span class="s">"symbols"</span>:<span class="s">"KRW"</span>})
+res.raise_for_status()
+rates = res.json()[<span class="s">'rates'</span>]   <span class="c"># {"2026-07-28": {"KRW": 1459.45}, ...}</span></pre></div>
+
+        <div class="code"><div class="bar"><span>3. 정렬 후 출력·누적</span><span>frank06.py:25-32</span></div><pre>sorted_dates = <span class="fn">sorted</span>(rates.keys())
+results = []
+<span class="k">for</span> date <span class="k">in</span> sorted_dates:
+    krw = rates[date][<span class="s">'KRW'</span>]
+    <span class="fn">print</span>(<span class="k">f</span><span class="s">"{date}:{krw:,.2f}원"</span>)
+    results.append({<span class="s">"날짜"</span>:date, <span class="s">"환율"</span>:krw})   <span class="c"># list[dict]로 CSV 저장을 준비</span></pre></div>
+
+        <div class="code"><div class="bar"><span>4. 최고·최저 환율</span><span>frank06.py:39-47</span></div><pre>max_item = <span class="fn">max</span>(rates.items(), key=<span class="k">lambda</span> x: x[<span class="n">1</span>][<span class="s">'KRW'</span>])
+min_item = <span class="fn">min</span>(rates.items(), key=<span class="k">lambda</span> x: x[<span class="n">1</span>][<span class="s">'KRW'</span>])
+max_date, max_krw = max_item[<span class="n">0</span>], max_item[<span class="n">1</span>][<span class="s">'KRW'</span>]</pre></div>
+
+        <div class="code"><div class="bar"><span>5. 등락률(%) 계산</span><span>frank06.py:51-56</span></div><pre>first_krw = rates[sorted_dates[<span class="n">0</span>]][<span class="s">'KRW'</span>]    <span class="c"># 30일 전</span>
+last_krw  = rates[sorted_dates[-<span class="n">1</span>]][<span class="s">'KRW'</span>]   <span class="c"># 오늘 (뒤에서 첫 번째)</span>
+change_pct = (last_krw / first_krw - <span class="n">1</span>) * <span class="n">100</span>
+sign = <span class="s">"+"</span> <span class="k">if</span> change_pct &gt;= <span class="n">0</span> <span class="k">else</span> <span class="s">""</span></pre></div>
+        <div class="note">"(나중값 ÷ 처음값 − 1) × 100"이 변화율 공식입니다. 예: 1450→1420이면 <code>(1420/1450-1)*100 ≈ -2.07%</code>.</div>
+
+        <div class="code"><div class="bar"><span>6. CSV로 저장</span><span>frank06.py:59-63</span></div><pre><span class="k">with</span> <span class="fn">open</span>(<span class="s">"usd_krw_30days.csv"</span>, <span class="s">"w"</span>, newline=<span class="s">""</span>, encoding=<span class="s">'utf-8-sig'</span>) <span class="k">as</span> f:
+    writer = csv.DictWriter(f, fieldnames=[<span class="s">"날짜"</span>, <span class="s">"환율"</span>])
+    writer.writeheader()
+    writer.writerows(results)</pre></div>
+      </section>
+
+      <!-- ================= PART 5 ================= -->
+      <div class="part"><span class="n">PART 5</span><h2>example — 종합 응용 스크립트 사전</h2><div class="ln"></div></div>
+      <p class="part-desc">여러 챕터의 기법을 한 스크립트 안에서 조합한 파일들. 이 폴더는 문서 어디에도 없었어서, 각 파일이 뭘 하는지 코드로 직접 정리했습니다.</p>
+
+      <section class="topic" id="s-session" style="--cat:var(--cat-example); --cat-soft:var(--cat-example-soft);">
+        <span class="tag"><span class="d"></span>example · save_session.py · attend_check.py</span>
+        <h3>로그인 세션 저장 · 재사용</h3>
+        <p>매번 로그인하지 않도록, <b>최초 1회 수동 로그인 → 쿠키를 파일로 저장 → 다음 실행부턴 그 쿠키를 불러와 재사용</b>하는 두 파일 조합입니다.</p>
+        <div class="code"><div class="bar"><span>save_session.py — 저장용</span><span></span></div><pre><span class="k">with</span> sync_playwright() <span class="k">as</span> p:
+    browser = p.chromium.launch(headless=<span class="k">False</span>)
+    page = browser.new_page()
+    page.goto(<span class="s">'https://nid.naver.com/nidlogin.login'</span>)
+    <span class="fn">input</span>(<span class="s">"로그인 완료 후 엔터..."</span>)              <span class="c"># 사람이 직접 아이디/비번 입력할 시간</span>
+    page.context.storage_state(path=<span class="s">"naver_session.json"</span>)  <span class="c"># 쿠키를 파일로</span></pre></div>
+        <div class="code"><div class="bar"><span>attend_check.py — 재사용용</span><span></span></div><pre><span class="k">if</span> <span class="k">not</span> os.path.isfile(SESSION_FILE):
+    <span class="fn">print</span>(<span class="s">"저장된 세션이 없습니다. save_session.py를 먼저 실행하세요."</span>)
+<span class="k">else</span>:
+    <span class="k">with</span> sync_playwright() <span class="k">as</span> p:
+        browser = p.chromium.launch(headless=<span class="k">False</span>)
+        context = browser.new_context(storage_state=SESSION_FILE)  <span class="c"># 저장된 쿠키로 시작</span>
+        page = context.new_page()
+        page.goto(<span class="s">"https://example.com/mypage"</span>)   <span class="c"># 로그인 없이 바로 접근됨</span></pre></div>
+        <div class="note">핵심은 <code>storage_state</code> 한 방향: 저장할 땐 <code>page.context.storage_state(path=...)</code>, 불러올 땐 <code>browser.new_context(storage_state=파일경로)</code>. 파일 하나로 로그인 상태 전체(쿠키)가 왔다갔다합니다.</div>
+      </section>
+
+      <section class="topic" id="s-img" style="--cat:var(--cat-example); --cat-soft:var(--cat-example-soft);">
+        <span class="tag"><span class="d"></span>example · img03.py</span>
+        <h3>이미지 크롤링 파이프라인</h3>
+        <p><a href="#s-combo">콤보 패턴</a>(Part 3)의 실제 완성 버전입니다. 검색 결과 페이지를 렌더링 → <code>img</code> 태그의 <code>src</code> 주소 수집 → <code>http</code>로 시작하는 진짜 주소만 필터 → <code>requests</code>로 하나씩 다운로드 → 폴더에 순번대로 저장.</p>
+        <div class="code"><pre>BASE_DIR = Path(__file__).resolve().parent
+Py_Scrap = BASE_DIR.parent / <span class="s">"Py_Scrap"</span>
+os.makedirs(Py_Scrap / <span class="s">"img"</span>, exist_ok=<span class="k">True</span>)   <span class="c"># 폴더 없으면 생성, 있으면 통과</span>
+
+<span class="c"># ... 브라우저로 src 목록 수집 (Part 3 콤보 패턴과 동일) ...</span>
+
+<span class="k">for</span> i, url <span class="k">in</span> <span class="fn">enumerate</span>(urls, start=<span class="n">1</span>):
+    data = requests.get(url, timeout=<span class="n">5</span>).content
+    <span class="k">with</span> <span class="fn">open</span>(Py_Scrap / <span class="s">"img"</span> / <span class="k">f</span><span class="s">"{i}.jpg"</span>, <span class="s">"wb"</span>) <span class="k">as</span> f:
+        f.write(data)</pre></div>
+      </section>
+
+      <section class="topic" id="s-finance" style="--cat:var(--cat-example); --cat-soft:var(--cat-example-soft);">
+        <span class="tag"><span class="d"></span>example · finance01/02 vs _requests 버전</span>
+        <h3>같은 목표, 두 가지 방식 비교</h3>
+        <p>이 폴더엔 같은 결과를 <b>urllib(표준 라이브러리)</b>와 <b>requests(외부 패키지)</b> 두 방식으로 각각 짠 파일이 짝지어 있습니다 — 무엇이 더 편한지 직접 비교해보라는 의도입니다.</p>
+        <div class="grid-wrap"><table class="grid"><thead><tr><th></th><th>finance01.py / finance02.py</th><th>_solution 버전</th></tr></thead><tbody>
+          <tr><td>요청</td><td><code>urllib.request.urlopen()</code></td><td><code>requests.get()</code></td></tr>
+          <tr><td>인코딩</td><td>직접 <code>get_content_charset()</code> 확인 후 decode</td><td><code>res.apparent_encoding</code>으로 자동</td></tr>
+          <tr><td>대상</td><td>HTML(정적 파싱) / JSON API</td><td>동일</td></tr>
+        </tbody></table></div>
+        <div class="note">두 버전이 <b>결과는 같지만 코드량이 다릅니다</b> — requests는 요청+디코딩+파싱을 몇 줄로 줄여주는 대신 설치가 필요하고, urllib은 설치 없이 되지만 인코딩을 직접 챙겨야 합니다. (자세한 비교는 <a href="#s-headers">헤더·requests</a> 섹션 참고)</div>
+      </section>
+
+      <section class="topic" id="s-youtube" style="--cat:var(--cat-example); --cat-soft:var(--cat-example-soft);">
+        <span class="tag"><span class="d"></span>example · youtube06.py</span>
+        <h3>youtube06.py — 이미지+엑셀 콤보</h3>
+        <p>Playwright로 목록을 수집하면서, 썸네일 이미지를 <b>파일로 저장하지 않고 메모리 바이트로만</b> 받아 엑셀 셀에 바로 끼워 넣는 조금 더 진행된 콤보입니다.</p>
+        <div class="code"><pre><span class="k">from</span> io <span class="k">import</span> BytesIO   <span class="c"># 이미지를 파일로 안 만들고 메모리에서 바로 다룸</span>
+<span class="k">import</span> xlsxwriter
+
+img_bytes = requests.get(thumb_url).content
+img_stream = BytesIO(img_bytes)          <span class="c"># 바이트를 "가짜 파일"처럼 다룰 수 있게</span>
+worksheet.insert_image(row, col, <span class="s">"thumb.jpg"</span>, {<span class="s">"image_data"</span>: img_stream})</pre></div>
+        <div class="note"><code>BytesIO</code>는 <code>open(path,"wb")</code>처럼 디스크에 파일을 만들지 않고, 메모리 안에서 바이트를 파일처럼 다루게 해주는 도구입니다. 이미지를 로컬에 남길 필요 없이 바로 엑셀에 넣고 싶을 때 씁니다.</div>
+      </section>
+
+      <section class="topic" id="s-ruliweb" style="--cat:var(--cat-example); --cat-soft:var(--cat-example-soft);">
+        <span class="tag"><span class="d"></span>example · ruliweb.py</span>
+        <h3>ruliweb.py — 세션 기반 게시글 크롤링</h3>
+        <p>브라우저 자동화 없이 <code>requests.Session()</code>만으로 게시글을 가져오는 가벼운 버전입니다. 로그인이 필요 없는 게시판이라 Selenium/Playwright 없이도 됩니다.</p>
+        <div class="code"><pre><span class="k">with</span> requests.Session() <span class="k">as</span> s:      <span class="c"># 세션: 여러 요청에 걸쳐 쿠키 유지</span>
+    post = s.get(<span class="s">"https://bbs.ruliweb.com/market/board/1020/read/37546"</span>)
+    post.raise_for_status()
+    soup = BeautifulSoup(post.text, <span class="s">"html.parser"</span>)</pre></div>
+        <div class="note">지금은 단발성 GET이라 <code>requests.get()</code>과 큰 차이가 안 느껴지지만, 로그인 후 여러 페이지를 이어서 가져와야 하면 <code>Session()</code> 없이는 매 요청마다 로그인 상태가 풀립니다 — <a href="#s-headers">헤더 섹션</a>의 세션 유지 도구상자와 이어지는 내용입니다.</div>
+      </section>
+
+      <!-- ================= PART 6 : PRACTICE ================= -->
+      <div class="part"><span class="n">PART 6</span><h2>직접 짜본 연습문제 5제</h2><div class="ln"></div></div>
+      <p class="part-desc">problem 폴더는 지금 직접 푸는 중이라 여기엔 넣지 않았습니다. 대신 <a href="#datastruct">자료구조 선택 기준</a> 다섯 가지 상황을 각각 정면으로 다루는 새 문제 5개를 코드까지 적어뒀습니다 — "아, 이런 상황엔 이렇게 가야 하는구나"를 코드로 확인하는 용도입니다. 전부 안정적인 연습용 사이트(quotes.toscrape.com, jsonplaceholder.typicode.com)를 씁니다.</p>
+
+      <div class="pcard" id="p1">
+        <div class="phead"><span class="pnum">문제 1</span></div>
+        <h3>명언 사이트에서 저자 이름만, 중복 없이 뽑아 텍스트로 저장</h3>
+        <div class="goal"><b>자료구조 포인트</b> — 값이 <code>author</code> 하나뿐이라 딕셔너리가 필요 없습니다. 게다가 "중복 없이"이므로 <code>set</code>으로 걸러낸 뒤 <code>list</code>로 바꿔 저장합니다.</div>
+        <p><code>https://quotes.toscrape.com/</code> 첫 페이지에 있는 명언들의 <b>저자 이름만</b> 중복 없이 모아 <code>authors.txt</code>에 한 줄씩 저장하세요.</p>
+        <div class="think">
+          <span class="think-label">사고 흐름</span>
+          <ol>
+            <li>문제를 다시 읽는다 — "저자 이름만", "중복 없이", "텍스트로 저장". 뽑을 값이 author 하나뿐이라는 게 먼저 눈에 띈다.</li>
+            <li>값이 하나뿐이면 레코드에 필드가 여러 개인 상황이 아니다 — dict를 쓸 이유가 없다(키에 붙일 다른 값이 없다).</li>
+            <li>"중복 없이"를 어떻게 만족시킬지 생각한다 — 다 모은 뒤에 걸러내는 것보다, 애초에 중복을 허용 안 하는 자료구조에 넣으며 모으는 게 더 간단하다.</li>
+            <li>set이 정확히 그 역할이지만, set은 순서가 없다는 것도 같이 떠오른다 — "파일로 저장"한다는 요구를 생각하면 실행할 때마다 순서가 바뀌는 건 곤란하다.</li>
+            <li>그래서 모을 땐 set, 저장 직전엔 정렬해서 list로 바꾼다는 두 단계로 나뉜다.</li>
+          </ol>
+          <div class="land">→ <b>author_set = set()</b>에 <code>add()</code>로 모으고, <code>sorted(author_set)</code>로 list로 바꿔 한 줄씩 파일에 쓴다.</div>
+        </div>
+        <div class="code"><div class="bar"><span>practice01.py</span><span>list[str] + set 중복제거</span></div><pre><span class="k">import</span> requests
+<span class="k">from</span> bs4 <span class="k">import</span> BeautifulSoup
+<span class="k">from</span> pathlib <span class="k">import</span> Path
+
+BASE_DIR = Path(__file__).resolve().parent
+url = <span class="s">"https://quotes.toscrape.com/"</span>
+
+res = requests.get(url)
+soup = BeautifulSoup(res.text, <span class="s">"html.parser"</span>)
+
+<span class="c"># 값이 이름 하나뿐 -> dict 필요 없음. 리스트로 충분.</span>
+<span class="c"># 다만 저자가 여러 명언에 반복 등장하므로 set으로 먼저 중복 제거</span>
+author_set = set()
+<span class="k">for</span> small <span class="k">in</span> soup.select(<span class="s">".quote .author"</span>):
+    author_set.add(small.get_text(strip=<span class="k">True</span>))
+
+authors = <span class="fn">sorted</span>(author_set)   <span class="c"># set은 순서가 없어서, 저장 전에 정렬해서 결과를 예측 가능하게</span>
+
+<span class="k">with</span> <span class="fn">open</span>(BASE_DIR / <span class="s">"authors.txt"</span>, <span class="s">"w"</span>, encoding=<span class="s">"utf-8"</span>) <span class="k">as</span> f:
+    <span class="k">for</span> name <span class="k">in</span> authors:
+        f.write(name + <span class="s">"\n"</span>)
+
+<span class="fn">print</span>(<span class="k">f</span><span class="s">"{len(authors)}명 저장 완료"</span>)</pre></div>
+        <div class="note">만약 저자별로 "명언 몇 개 썼는지" 개수까지 알고 싶다면 얘기가 달라집니다 — 그건 이름(key)마다 숫자(value)가 필요하니 <code>dict</code>로 (<code>Counter</code>가 정확히 이 모양입니다). "값 하나만 모으면 끝"이면 list, "이름에 뭔가를 붙여야" 하면 dict — 이 문제와 문제 3의 차이가 그 경계선입니다.</div>
+      </div>
+
+      <div class="pcard" id="p2">
+        <div class="phead"><span class="pnum">문제 2</span></div>
+        <h3>명언 10개의 텍스트·저자·태그 개수를 CSV로</h3>
+        <div class="goal"><b>자료구조 포인트</b> — 레코드(명언 하나)가 필드 3개를 갖고, 그 레코드가 10개 있습니다. 크롤링에서 가장 흔한 <code>list[dict]</code> + <code>DictWriter</code> 패턴입니다.</div>
+        <p>같은 페이지에서 명언 <b>10개</b>의 (본문 텍스트, 저자, 태그 개수)를 크롤링해 <code>quotes.csv</code>로 저장하세요.</p>
+        <div class="think">
+          <span class="think-label">사고 흐름</span>
+          <ol>
+            <li>문제를 뜯어본다 — "명언 10개"(레코드가 여러 개), "텍스트·저자·태그 개수"(레코드 하나에 필드가 세 개). 이 둘이 동시에 참이다.</li>
+            <li>필드가 여러 개인 레코드가 여러 개 있으면, 레코드 하나는 dict, 그게 여러 개 모이면 list — 그래서 list[dict]가 바로 떠오른다.</li>
+            <li>나중에 이 데이터로 뭘 하는지 확인한다 — "CSV로 저장"이 전부다. 특정 명언 하나를 이름으로 즉시 찾아야 하는 요구는 없다.</li>
+            <li>즉시 조회 요구가 없으니 딕셔너리 하나로 모으는 방식을 쓸 이유가 없다 — 오히려 본문 텍스트를 key로 쓰면 너무 길고 어색하다.</li>
+            <li>"CSV로 저장"이라는 조건에서 <code>csv.DictWriter</code>가 <code>list[dict]</code>를 그대로 받는다는 걸 떠올리면, 애초에 결과를 그 모양으로 모아두는 게 저장 단계까지 자연스럽게 이어진다는 게 확인된다.</li>
+          </ol>
+          <div class="land">→ <b>results = []</b>로 시작해서 반복문 안에서 <code>select_one()</code>으로 필드 세 개를 뽑아 dict로 묶어 <code>append</code>하고, 끝나면 <code>writer.writerows(results)</code>로 한 번에 CSV에 쓴다.</div>
+        </div>
+        <div class="code"><div class="bar"><span>practice02.py</span><span>list[dict] + csv.DictWriter</span></div><pre><span class="k">import</span> csv
+
+quotes = soup.select(<span class="s">".quote"</span>)[:<span class="n">10</span>]
+results = []   <span class="c"># list[dict]로 시작 -- 여러 필드 레코드가 여러 개</span>
+
+<span class="k">for</span> q <span class="k">in</span> quotes:
+    text = q.select_one(<span class="s">".text"</span>).get_text(strip=<span class="k">True</span>)
+    author = q.select_one(<span class="s">".author"</span>).get_text(strip=<span class="k">True</span>)
+    tag_count = <span class="fn">len</span>(q.select(<span class="s">".tags .tag"</span>))   <span class="c"># select()는 리스트 -> len()으로 개수만</span>
+
+    results.append({
+        <span class="s">"text"</span>: text,
+        <span class="s">"author"</span>: author,
+        <span class="s">"tag_count"</span>: tag_count,
+    })
+
+<span class="k">with</span> <span class="fn">open</span>(BASE_DIR / <span class="s">"quotes.csv"</span>, <span class="s">"w"</span>, newline=<span class="s">""</span>, encoding=<span class="s">"utf-8-sig"</span>) <span class="k">as</span> f:
+    writer = csv.DictWriter(f, fieldnames=[<span class="s">"text"</span>, <span class="s">"author"</span>, <span class="s">"tag_count"</span>])
+    writer.writeheader()
+    writer.writerows(results)   <span class="c"># results가 list[dict]라 바로 넘길 수 있음</span></pre></div>
+        <div class="mistake"><span class="x">✗</span> <code>results = {}</code>로 시작해서 <code>results[text] = {...}</code>처럼 담고 싶어질 수 있지만, 여긴 "빠르게 조회할 고유 키"가 없습니다(본문 텍스트를 key로 쓰면 너무 김). <b>순서대로 다 저장하고 끝</b>인 상황이면 dict를 고를 이유가 없습니다.</div>
+      </div>
+
+      <div class="pcard" id="p3">
+        <div class="phead"><span class="pnum">문제 3</span></div>
+        <h3>유저 한 명의 프로필만 조회해서 JSON으로</h3>
+        <div class="goal"><b>자료구조 포인트</b> — 결과가 <b>레코드 하나뿐</b>입니다. list[dict]로 만들면 <code>results[0]["email"]</code>처럼 불필요한 인덱싱이 생깁니다 — dict 하나로 충분합니다.</div>
+        <p><code>https://jsonplaceholder.typicode.com/users/1</code>에서 이름·이메일·회사명·도시만 뽑아 <code>user_profile.json</code>으로 저장하세요.</p>
+        <div class="think">
+          <span class="think-label">사고 흐름</span>
+          <ol>
+            <li>문제를 본다 — "유저 한 명의 프로필만". 조회 대상이 정확히 하나다.</li>
+            <li>API 응답도 확인한다 — <code>/users/1</code>은 유저 배열이 아니라 유저 객체 하나를 바로 준다. 이미 감쌀 리스트가 없는 형태다.</li>
+            <li>레코드가 하나뿐이면 list[dict]로 만들 이유가 없다 — 굳이 감싸면 이후 코드에서 항상 <code>results[0]["email"]</code>처럼 의미 없는 인덱스 0을 붙여야 한다.</li>
+            <li>필요한 값 중 company·city는 raw 안에 또 dict로 중첩돼 있다는 것도 미리 확인해둔다 — 한 번 더 파고들어야 한다.</li>
+            <li>결론: raw를 그대로 저장하지 않고, 필요한 필드만 뽑은 새 dict 하나(profile)를 만들어 저장한다.</li>
+          </ol>
+          <div class="land">→ <b>profile = {...}</b> 딕셔너리 하나에 <code>raw["company"]["name"]</code>처럼 중첩값을 한 번 더 파고들어 담고, <code>json.dump(profile, f, ...)</code>로 바로 저장한다.</div>
+        </div>
+        <div class="code"><div class="bar"><span>practice03.py</span><span>단일 dict + json.dump</span></div><pre><span class="k">import</span> json
+
+res = requests.get(<span class="s">"https://jsonplaceholder.typicode.com/users/1"</span>)
+res.raise_for_status()
+raw = res.json()   <span class="c"># 이미 딕셔너리 하나 -- 유저가 한 명뿐이라 리스트로 감쌀 이유가 없음</span>
+
+profile = {
+    <span class="s">"name"</span>: raw[<span class="s">"name"</span>],
+    <span class="s">"email"</span>: raw[<span class="s">"email"</span>],
+    <span class="s">"company"</span>: raw[<span class="s">"company"</span>][<span class="s">"name"</span>],   <span class="c"># 중첩 딕셔너리 한 번 더 파고듦</span>
+    <span class="s">"city"</span>: raw[<span class="s">"address"</span>][<span class="s">"city"</span>],
+}
+
+<span class="k">with</span> <span class="fn">open</span>(BASE_DIR / <span class="s">"user_profile.json"</span>, <span class="s">"w"</span>, encoding=<span class="s">"utf-8"</span>) <span class="k">as</span> f:
+    json.dump(profile, f, ensure_ascii=<span class="k">False</span>, indent=<span class="n">2</span>)</pre></div>
+        <div class="note">만약 과제가 "유저 <b>10명 전부</b>를 조회해서 저장"이었다면 바로 문제 2 패턴(list[dict])으로 바뀝니다. <b>몇 개를 다루느냐</b>가 리스트가 필요한지 아닌지를 가르는 첫 번째 기준입니다.</div>
+      </div>
+
+      <div class="pcard" id="p4">
+        <div class="phead"><span class="pnum">문제 4</span></div>
+        <h3>유저 10명을 모으되, username으로 즉시 조회 가능하게</h3>
+        <div class="goal"><b>자료구조 포인트</b> — 이번엔 레코드가 10개지만, 목적이 "전체를 훑는 것"이 아니라 <b>"이름 하나로 바로 찾는 것"</b>입니다. list[dict]로 모으면 매번 반복문이 필요하지만, username을 key로 쓴 dict면 즉시 조회됩니다.</div>
+        <p><code>https://jsonplaceholder.typicode.com/users</code>(10명)를 조회해서, <code>username</code>으로 즉시 이메일을 찾을 수 있는 구조로 저장하세요. 그리고 "Bret"의 이메일을 반복문 없이 출력하세요.</p>
+        <div class="think">
+          <span class="think-label">사고 흐름</span>
+          <ol>
+            <li>문제를 다시 읽는다 — "유저 10명"(레코드 여러 개)까지는 문제 2와 같다. 그런데 "username으로 즉시 조회", "반복문 없이 출력"이 추가로 붙는다.</li>
+            <li>레코드가 여러 개라고 해서 자동으로 list[dict]는 아니다 — "여러 개를 어떻게 다룰 것인가"가 진짜 기준이라는 걸 다시 떠올린다.</li>
+            <li>일단 list[dict]로 모았다고 가정하고 "Bret의 이메일"을 어떻게 꺼낼지 시뮬레이션해본다 — <code>next(u for u in users if u["username"]=="Bret")</code> 같은 반복 탐색이 매번 필요하다. 문제가 요구한 "반복문 없이"에 이미 어긋난다.</li>
+            <li>username이 사람마다 겹치지 않는 고유값이라는 것도 확인한다 — 고유값이 있고 그걸로 즉시 찾아야 한다는 조건이 겹치면, 그게 바로 dict의 key로 쓰기 좋은 조건이다.</li>
+            <li>결론: username을 key로 쓰는 dict로 모은다 — 저장도 list가 아니라 그 dict를 그대로 json.dump한다.</li>
+          </ol>
+          <div class="land">→ <b>users = {}</b>로 시작해서 <code>users[u['username']] = {...}</code>로 채우고, <code>users['Bret']['email']</code>처럼 반복문 없이 바로 꺼낸다.</div>
+        </div>
+        <div class="vs-grid">
+          <div>
+            <div class="vs-label bad">✗ list[dict]로 모으면 — 매번 찾아야 함</div>
+            <div class="code"><pre>users = []
+<span class="k">for</span> u <span class="k">in</span> res.json():
+    users.append({<span class="s">"username"</span>: u[<span class="s">"username"</span>], <span class="s">"email"</span>: u[<span class="s">"email"</span>]})
+
+<span class="c"># "Bret"을 찾으려면 매번 전체를 훑어야 함</span>
+target = <span class="fn">next</span>(u <span class="k">for</span> u <span class="k">in</span> users <span class="k">if</span> u[<span class="s">"username"</span>]==<span class="s">"Bret"</span>)
+<span class="fn">print</span>(target[<span class="s">"email"</span>])</pre></div>
+          </div>
+          <div>
+            <div class="vs-label good">✓ dict(username이 key)로 모으면 — 바로 조회</div>
+            <div class="code"><pre>users = {}   <span class="c"># 조회가 목적이므로 dict로 시작</span>
+<span class="k">for</span> u <span class="k">in</span> res.json():
+    users[u[<span class="s">"username"</span>]] = {<span class="s">"email"</span>: u[<span class="s">"email"</span>], <span class="s">"name"</span>: u[<span class="s">"name"</span>]}
+
+<span class="c"># 반복문 없이 바로</span>
+<span class="fn">print</span>(users[<span class="s">"Bret"</span>][<span class="s">"email"</span>])
+
+<span class="k">with</span> <span class="fn">open</span>(BASE_DIR / <span class="s">"users_by_name.json"</span>, <span class="s">"w"</span>, encoding=<span class="s">"utf-8"</span>) <span class="k">as</span> f:
+    json.dump(users, f, ensure_ascii=<span class="k">False</span>, indent=<span class="n">2</span>)</pre></div>
+          </div>
+        </div>
+        <div class="note">두 코드 모두 "정답"입니다 — 다만 <b>이후에 뭘 더 할지</b>가 기준입니다. 순위를 매기거나 최댓값을 찾을 일이 있다면 list[dict], 이름으로 콕 집어 찾을 일이 많다면 dict(고유값이 key)가 이후 코드를 훨씬 짧게 만듭니다.</div>
+      </div>
+
+      <div class="pcard" id="p5">
+        <div class="phead"><span class="pnum">문제 5</span></div>
+        <h3>여러 페이지를 넘겨가며 중복 없이 계속 쌓기</h3>
+        <div class="goal"><b>자료구조 포인트</b> — <a href="#s-selenium">무한스크롤</a>과 같은 마음가짐입니다: "이미 모은 것"과 "새로 온 것"을 구분해서 <b>중복 없이 누적</b>하고, <b>더 이상 새 게 없으면 멈춥니다</b>. 정적 페이지네이션으로 같은 패턴을 먼저 연습해두면 스크롤 버전(Playwright)으로 옮길 때 로직은 그대로 재사용됩니다.</div>
+        <p>quotes.toscrape.com은 <code>/page/1/</code>, <code>/page/2/</code>... 형태로 다음 페이지를 제공합니다. 페이지를 넘기며 명언 텍스트를 <b>중복 없이</b> 계속 모으다가, <b>새로 추가된 게 없는 페이지</b>가 나오면 멈추고 총 개수를 출력하세요.</p>
+        <div class="think">
+          <span class="think-label">사고 흐름</span>
+          <ol>
+            <li>문제를 본다 — "여러 페이지를 넘겨가며", "중복 없이", "새로 추가된 게 없는 페이지가 나오면 멈춘다". 세 가지 요구가 각각 다른 걸 요구한다.</li>
+            <li>최종 결과는 순서가 있는 목록(모은 명언들)이니 담는 그릇은 list다 — 여기까진 문제 2와 같다.</li>
+            <li>"중복 없이"를 list만으로 확인하려면 매번 <code>in collected</code>로 전체를 훑어야 해서, 페이지가 늘어날수록 느려진다 — 조회 전용으로 훨씬 빠른 set을 하나 더 두면 이 문제가 사라진다.</li>
+            <li>"새로 추가된 게 없으면 멈춘다"는 종료 조건을 코드로 어떻게 표현할지 생각한다 — 한 페이지를 처리하는 동안 새로 들어온 개수를 세어두면, 그 값이 0인지로 바로 판단할 수 있다.</li>
+            <li>페이지 자체가 존재하지 않는 경우(마지막 페이지 다음)도 있을 수 있으니, 명언 목록 자체가 비어있는 경우도 별도로 걸러야 무한루프를 막는다.</li>
+            <li>정리하면 세 가지 상태를 각각 다른 변수로 나눠 관리해야 한다는 게 확정된다 — 결과(list), 중복확인(set), 종료판단(개수).</li>
+          </ol>
+          <div class="land">→ <b>collected</b>는 list로 결과를 쌓고, <b>seen</b>은 set으로 중복만 빠르게 확인하고, 페이지마다 <code>new_count</code>가 0이면 while 루프를 <code>break</code>한다.</div>
+        </div>
+        <div class="code"><div class="bar"><span>practice05.py</span><span>누적 리스트 + set 중복확인 + 종료조건</span></div><pre>collected = []          <span class="c"># 최종 결과 (순서 유지가 필요하니 list)</span>
+seen = set()            <span class="c"># "이미 모았는지" 빠르게 확인만 하는 용도 (조회 전용이라 set)</span>
+page = <span class="n">1</span>
+
+<span class="k">while</span> <span class="k">True</span>:
+    res = requests.get(<span class="k">f</span><span class="s">"https://quotes.toscrape.com/page/{page}/"</span>)
+    soup = BeautifulSoup(res.text, <span class="s">"html.parser"</span>)
+    texts = [q.select_one(<span class="s">".text"</span>).get_text(strip=<span class="k">True</span>) <span class="k">for</span> q <span class="k">in</span> soup.select(<span class="s">".quote"</span>)]
+
+    <span class="k">if</span> <span class="k">not</span> texts:            <span class="c"># 그 페이지 자체가 비어있음 -> 마지막 페이지 넘어감</span>
+        <span class="k">break</span>
+
+    new_count = <span class="n">0</span>
+    <span class="k">for</span> t <span class="k">in</span> texts:
+        <span class="k">if</span> t <span class="k">not</span> <span class="k">in</span> seen:      <span class="c"># 스크롤 패턴의 "높이가 같으면 종료"와 같은 역할</span>
+            seen.add(t)
+            collected.append(t)
+            new_count += <span class="n">1</span>
+
+    <span class="fn">print</span>(<span class="k">f</span><span class="s">"page {page}: 새로 {new_count}개, 누적 {len(collected)}개"</span>)
+
+    <span class="k">if</span> new_count == <span class="n">0</span>:        <span class="c"># 이번 페이지에서 하나도 새로 안 들어왔으면 그만</span>
+        <span class="k">break</span>
+    page += <span class="n">1</span>
+
+<span class="fn">print</span>(<span class="k">f</span><span class="s">"총 {len(collected)}개 수집 완료"</span>)</pre></div>
+        <div class="note"><b>왜 <code>collected</code>(list)와 <code>seen</code>(set) 둘 다 필요한가</b> — <code>seen</code>은 "이미 있는지"만 빠르게 확인하는 용도(순서 필요 없음, <code>in</code> 검사가 리스트보다 훨씬 빠름), <code>collected</code>는 실제로 저장해서 나중에 쓸 <b>순서 있는 결과</b>입니다. Playwright 무한스크롤도 구조는 똑같습니다 — <code>while</code> 대신 "스크롤→대기", <code>texts</code>가 비었는지 대신 "페이지 높이가 그대로인지"로 종료 조건만 바뀝니다.</div>
+      </div>
+
+      <!-- ================= APPENDIX ================= -->
+      <div class="part"><span class="n">부록</span><h2>레퍼런스</h2><div class="ln"></div></div>
+
+      <section id="glossary" style="margin-bottom:40px;">
+        <h3 style="font-size:1.2rem; margin-bottom:8px;">메서드 사전</h3>
+        <p style="color:var(--ink-soft); margin-bottom:20px; max-width:66ch;">이번 주 코드에서 직접 써본 메서드를 도구별로 모았습니다. "이 한 줄이 정확히 뭘 하는지" 찾아보는 용도입니다.</p>
+
+        <details class="gcard">
+          <summary>requests / API / JSON<span class="cnt">10개</span></summary>
+          <div class="gbody"><table class="gt">
+            <tr><th>코드</th><th>의미</th></tr>
+            <tr><td><code>requests.get(url, headers=, params=)</code></td><td>헤더·쿼리파라미터를 붙여 GET 요청</td></tr>
+            <tr><td><code>requests.Session()</code></td><td>여러 요청에 걸쳐 쿠키 등 상태 유지</td></tr>
+            <tr><td><code>r.status_code</code> / <code>r.ok</code></td><td>응답 상태 코드 / 200번대 성공 여부</td></tr>
+            <tr><td><code>r.text</code></td><td>응답 본문을 문자열로</td></tr>
+            <tr><td><code>r.json()</code></td><td>응답 본문을 바로 JSON(dict/list)으로</td></tr>
+            <tr><td><code>r.content</code></td><td>응답 본문을 바이트 그대로(이미지 등)</td></tr>
+            <tr><td><code>r.encoding = r.apparent_encoding</code></td><td>인코딩을 실제 추정값으로 맞추기</td></tr>
+            <tr><td><code>r.raise_for_status()</code></td><td>4xx/5xx면 바로 예외를 던지게 하기</td></tr>
+            <tr><td><code>json.dump(obj, f, ensure_ascii=False, indent=2)</code></td><td>객체 → JSON 파일 (한글 유지, 들여쓰기)</td></tr>
+            <tr><td><code>json.loads(문자열)</code></td><td>JSON 문자열 → 파이썬 객체</td></tr>
+          </table></div>
+        </details>
+
+        <details class="gcard">
+          <summary>BeautifulSoup<span class="cnt">9개</span></summary>
+          <div class="gbody"><table class="gt">
+            <tr><th>코드</th><th>의미</th></tr>
+            <tr><td><code>BeautifulSoup(html, "html.parser")</code></td><td>HTML 문자열을 태그 트리로 파싱</td></tr>
+            <tr><td><code>soup.select(선택자)</code></td><td>조건에 맞는 요소 전부를 <b>리스트로</b></td></tr>
+            <tr><td><code>soup.select_one(선택자)</code></td><td>첫 번째 하나만, 없으면 <code>None</code></td></tr>
+            <tr><td><code>soup.find(태그, class_=)</code></td><td>태그+속성으로 하나 찾기</td></tr>
+            <tr><td><code>soup.find_all(태그, limit=n)</code></td><td>태그+속성으로 리스트, 개수 제한 가능</td></tr>
+            <tr><td><code>.text</code> / <code>.get_text(strip=True)</code></td><td>하위 텍스트 전부 이어붙이기(공백제거 옵션)</td></tr>
+            <tr><td><code>tag["속성명"]</code> / <code>tag.get("속성명")</code></td><td>속성값 읽기(get은 없어도 에러 없이 None)</td></tr>
+            <tr><td><code>tag['class']</code></td><td>class는 항상 리스트로 옴</td></tr>
+            <tr><td><code>.next_sibling</code></td><td>다음 형제 노드(공백도 형제로 셈)</td></tr>
+          </table></div>
+        </details>
+
+        <details class="gcard">
+          <summary>Selenium<span class="cnt">10개</span></summary>
+          <div class="gbody"><table class="gt">
+            <tr><th>코드</th><th>의미</th></tr>
+            <tr><td><code>webdriver.Chrome(service=, options=)</code></td><td>크롬을 실행해 조종 객체 받기</td></tr>
+            <tr><td><code>driver.get(url)</code></td><td>주소로 이동</td></tr>
+            <tr><td><code>driver.find_element(By.종류, 값)</code></td><td>요소 하나 찾기(못 찾으면 예외)</td></tr>
+            <tr><td><code>driver.find_elements(By.종류, 값)</code></td><td>요소 리스트로 전부</td></tr>
+            <tr><td><code>.send_keys("값")</code> / <code>.click()</code></td><td>입력 / 클릭</td></tr>
+            <tr><td><code>driver.current_url</code></td><td>지금 주소 읽기</td></tr>
+            <tr><td><code>WebDriverWait(driver, 초)</code></td><td>최대 이만큼만 기다리는 대기 객체</td></tr>
+            <tr><td><code>wait.until(EC.조건)</code></td><td>조건이 참이 될 때까지 대기</td></tr>
+            <tr><td><code>EC.presence_of_element_located(...)</code></td><td>DOM에 나타날 때까지</td></tr>
+            <tr><td><code>driver.quit()</code></td><td>브라우저 완전 종료</td></tr>
+          </table></div>
+        </details>
+
+        <details class="gcard">
+          <summary>Playwright<span class="cnt">9개</span></summary>
+          <div class="gbody"><table class="gt">
+            <tr><th>코드</th><th>의미</th></tr>
+            <tr><td><code>with sync_playwright() as p:</code></td><td>세션 시작(블록 끝나면 자동 정리)</td></tr>
+            <tr><td><code>p.chromium.launch(headless=)</code></td><td>크롬 실행</td></tr>
+            <tr><td><code>browser.new_page(viewport=)</code></td><td>새 탭 열기</td></tr>
+            <tr><td><code>page.goto(url)</code></td><td>주소로 이동</td></tr>
+            <tr><td><code>page.wait_for_timeout(ms)</code></td><td>밀리초 무조건 대기</td></tr>
+            <tr><td><code>page.fill(선택자, 값)</code> / <code>.click(선택자)</code></td><td>입력 / 클릭</td></tr>
+            <tr><td><code>page.locator(선택자, has_text=)</code></td><td>조건+텍스트로 요소 핸들 생성</td></tr>
+            <tr><td><code>page.query_selector_all(선택자)</code></td><td>요소 리스트로 전부</td></tr>
+            <tr><td><code>element.get_attribute("속성")</code></td><td>HTML 속성값 읽기</td></tr>
+          </table></div>
+        </details>
+
+        <details class="gcard">
+          <summary>파일·경로·환경 유틸<span class="cnt">8개</span></summary>
+          <div class="gbody"><table class="gt">
+            <tr><th>코드</th><th>의미</th></tr>
+            <tr><td><code>Path(__file__).resolve().parent</code></td><td>이 스크립트가 있는 폴더(실행 위치와 무관)</td></tr>
+            <tr><td><code>경로 / "폴더" / "파일명"</code></td><td>Path끼리 <code>/</code>로 이어붙이기</td></tr>
+            <tr><td><code>os.makedirs(path, exist_ok=True)</code></td><td>폴더 없으면 생성, 있으면 통과</td></tr>
+            <tr><td><code>os.path.isfile(path)</code></td><td>파일 존재 확인</td></tr>
+            <tr><td><code>open(path, "w"/"a"/"wb", encoding=)</code></td><td>w=새로쓰기, a=이어쓰기, wb=바이너리</td></tr>
+            <tr><td><code>load_dotenv()</code> / <code>os.getenv("키")</code></td><td>.env 등록 / 환경변수 읽기</td></tr>
+            <tr><td><code>f"...{변수}..."</code></td><td>f-string 변수 삽입</td></tr>
+            <tr><td><code>enumerate(리스트, start=1)</code></td><td>순번과 함께 순회</td></tr>
+          </table></div>
+        </details>
+      </section>
+
+      <section id="imports" style="margin-bottom:40px;">
+        <h3 style="font-size:1.2rem; margin-bottom:8px;">Import 가이드 — 이 줄이 보이면 이런 방식이다</h3>
+        <div class="grid-wrap"><table class="grid"><thead><tr><th>import</th><th>어떤 상황에 쓰는지</th></tr></thead><tbody>
+          <tr><td><code>import urllib.request as req</code></td><td>표준 라이브러리로 요청. 인코딩·디코딩을 직접 처리해야 함</td></tr>
+          <tr><td><code>from bs4 import BeautifulSoup</code></td><td>받아온 HTML/XML 문자열을 파싱할 때 항상 같이</td></tr>
+          <tr><td><code>import requests</code></td><td>정적 페이지든 JSON API든, 새 스크립트의 기본 선택지</td></tr>
+          <tr><td><code>from fake_useragent import UserAgent</code></td><td>서버가 헤더로 봇을 걸러낼 때 가짜 User-Agent 생성</td></tr>
+          <tr><td><code>from selenium import webdriver</code></td><td>로그인·동적 페이지, Selenium으로 할 때 첫 줄</td></tr>
+          <tr><td><code>from selenium.webdriver.support.ui import WebDriverWait</code></td><td><code>time.sleep</code>이 불안정하게 느껴질 때</td></tr>
+          <tr><td><code>from playwright.sync_api import sync_playwright</code></td><td>Playwright로 할 때 유일한 진입점</td></tr>
+          <tr><td><code>from dotenv import load_dotenv</code></td><td>비밀번호·API 키처럼 코드에 평문으로 남기면 안 되는 값</td></tr>
+          <tr><td><code>from pathlib import Path</code></td><td>스크립트 위치 기준 경로를 실행 위치와 무관하게 고정</td></tr>
+        </tbody></table></div>
+      </section>
+
+      <section id="confusing">
+        <h3 style="font-size:1.2rem; margin-bottom:14px;">헷갈리는 것 총정리</h3>
+
+        <div class="grid-wrap"><table class="grid"><thead><tr><th></th><th>동작</th><th>자식 여럿이면</th></tr></thead><tbody>
+          <tr><td><code>.string</code></td><td>자식이 텍스트 하나뿐일 때만 반환</td><td><b>None</b></td></tr>
+          <tr><td><code>.text</code></td><td>하위 모든 텍스트를 이어붙임</td><td>전부 이어붙임</td></tr>
+          <tr><td><code>.get_text(sep, strip=)</code></td><td><code>.text</code> + 구분자·공백제거 옵션</td><td>전부 이어붙임</td></tr>
+        </tbody></table></div>
+
+        <div class="grid-wrap"><table class="grid"><thead><tr><th></th><th>find()</th><th>find_all()</th><th>select_one()</th><th>select()</th></tr></thead><tbody>
+          <tr><td>반환</td><td>태그 1개</td><td>리스트</td><td>태그 1개</td><td>리스트</td></tr>
+          <tr><td>못 찾으면</td><td>None</td><td>[]</td><td>None</td><td>[]</td></tr>
+          <tr><td>조건 문법</td><td colspan="2">태그명+속성(dict/kwargs)</td><td colspan="2">CSS 선택자 문자열</td></tr>
+        </tbody></table></div>
+
+        <div class="mistake"><span class="x">①</span> <code>class</code> 예약어 충돌 — <code>find(..., class="x")</code>는 <code>SyntaxError</code>. <code>class_</code>로.</div>
+        <div class="mistake"><span class="x">②</span> <code>select(...)</code>에 바로 <code>.text</code> — 리스트라서 <code>AttributeError</code>. 반복문 또는 <code>select_one()</code>.</div>
+        <div class="mistake"><span class="x">③</span> 클래스명 오타 — 에러 없이 조용히 빈 리스트. <code>len()</code>으로 개수부터 확인하는 습관.</div>
+        <div class="mistake"><span class="x">④</span> <code>enumerate()</code> 기본값은 0부터 — 1부터 세려면 <code>start=1</code>.</div>
+        <div class="mistake"><span class="x">⑤</span> 상대경로는 cwd 기준 — <code>Path(__file__).resolve().parent</code>로 절대경로 고정.</div>
+        <div class="mistake"><span class="x">⑥</span> <code>load_dotenv()</code>는 import만 하고 <b>호출</b>을 안 하면 값이 안 채워짐(question03에서 실제로 겪음).</div>
+        <div class="mistake"><span class="x">⑦</span> 딕셔너리를 <code>csv.DictWriter.writerows()</code>에 그대로 넣으면 key만 순회됨 — <code>writerows()</code>엔 <b>list[dict]</b>를 넘겨야 함.</div>
+        <div class="mistake"><span class="x">⑧</span> <code>max()</code>/<code>min()</code>에 튜플·딕셔너리를 넣을 땐 <code>key=lambda</code>로 비교 기준을 직접 지정 — 안 그러면 엉뚱한 기준(예: 날짜 문자열)으로 비교됨.</div>
+        <div class="mistake"><span class="x">⑨</span> 같은 dict key에 값을 반복해서 넣으면 이전 값이 조용히 덮어써짐 — 여러 번 쌓아야 하면 dict가 아니라 list.</div>
+
+        <div class="closing" style="margin-top:24px;">
+          <h2>다음에 새 크롤링을 시작할 때, 이 순서로</h2>
+          <ol>
+            <li><b>페이지 소스보기</b>로 데이터가 HTML에 있는지 확인 → 있으면 <a href="#s-download">정적 파싱</a></li>
+            <li>없으면 Network 탭에서 JSON 응답을 찾는다 → 있으면 <a href="#s-apibasic">API 직접 호출</a></li>
+            <li>로그인·스크롤·클릭이 필요하면 → <a href="#s-selenium">Selenium</a> / <a href="#s-playwright">Playwright</a></li>
+            <li>결과를 모으기 전에 먼저 정한다 — <a href="#datastruct">list인지 dict인지</a></li>
+            <li>이미지·파일 자체가 필요하면 주소만 모아 <a href="#s-combo">requests 콤보</a>로 다운로드</li>
+          </ol>
+        </div>
+      </section>
+
+      <footer class="foot">Bigpy 학습노트 통합본 · chapter01–05 + example · 2026-08-24 ~ 08-28 정리</footer>
+    </div>
+  </main>
+</div>
+
+<script>
+(function(){
+  var links = Array.prototype.slice.call(document.querySelectorAll('.toc a'));
+  var sections = links.map(function(a){ return document.querySelector(a.getAttribute('href')); }).filter(Boolean);
+  if(!sections.length) return;
+  var obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      var id = '#' + entry.target.id;
+      var link = links.find(function(a){ return a.getAttribute('href') === id; });
+      if(!link) return;
+      if(entry.isIntersecting){
+        links.forEach(function(a){ a.style.background=''; a.style.color=''; a.style.fontWeight=''; });
+        link.style.background = 'var(--surface-2)';
+        link.style.color = 'var(--ink)';
+        link.style.fontWeight = '600';
+      }
+    });
+  }, { rootMargin: '-10% 0px -75% 0px', threshold: 0 });
+  sections.forEach(function(s){ obs.observe(s); });
+})();
+</script>

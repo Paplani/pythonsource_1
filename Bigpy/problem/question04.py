@@ -7,6 +7,7 @@
 # - 로그인 세션 재사용은 Playwright의 `storage_state`를 활용하면 편합니다.
 
 from playwright.sync_api import sync_playwright
+from bs4 import BeautifulSoup
 from pathlib import Path
 import os
 from dotenv import load_dotenv
@@ -14,6 +15,7 @@ from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent
 Py_Scrap= BASE_DIR.parent/"Py_Scrap"
+file_path = Py_Scrap / "titles.txt"
 
 load_dotenv()
 
@@ -22,7 +24,7 @@ SESSION_FILE = "dcinside_session.json"
 def save_login_session():
 
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=False)
+        browser = p.chromium.launch(headless=False, channel="chrome")   # Playwright 자체 크로미움 대신 설치된 크롬을 사용
         page = browser.new_page()
         page.goto('https://sign.dcinside.com/login?s_url=https://www.dcinside.com/')
 
@@ -36,9 +38,10 @@ def get_dcinside_post_title():
     if Path("dcinside_session.json").exists():
         with sync_playwright() as p:
             browser = p.chromium.launch(
-                headless=False, 
+                headless=False,
+                channel="chrome",   # Playwright 자체 크로미움 대신 설치된 크롬을 사용
                 args=[
-                    "--mute--audio", 
+                    "--mute-audio", 
                     "--no-sandbox", 
                     "--disable-dev-shm-usage", 
                     "--disable-gpu",
@@ -47,19 +50,49 @@ def get_dcinside_post_title():
             context = browser.new_context(storage_state=SESSION_FILE)
             page = context.new_page()
 
+            page.once("dialog", lambda dialog: dialog.accept())     # Playwright에서 브라우저의 팝업창(Dialog)이 뜨면 자동으로 확인(OK)을 눌러주는 코드
+
             page.goto("https://gall.dcinside.com/mgallery/board/lists?id=theroyal")
             page.wait_for_timeout(3000)
 
-            page.once("dialog", lambda dialog: dialog.accept())
-
             # 여기에 이제 스크롤 처리해야함
 
-            # #container > section.left_content > article:nth-child(3) > div.gall_listwrap.list > table > tbody
-            post_body = page.query_selector_all("#container > section.left_content > article:nth-child(3) > div.gall_listwrap.list > table > tbody")
+            page.keyboard.press("PageDown")
+            page.wait_for_timeout(3000)
 
+            scroll_pause_time = 4000
+            last_height = page.evaluate("document.documentElement.scrollHeight")
 
+            while True:
+                page.evaluate("window.scrollTo(0, document.documentElement.scrollHeight)")
+                page.wait_for_timeout(scroll_pause_time)
+                new_height = page.evaluate("document.documentElement.scrollHeight")
 
+                if last_height == new_height:
+                    break
 
+                last_height = new_height
+
+            html_content = page.content()
+            browser.close()
+
+        soup = BeautifulSoup(html_content, 'html.parser')
+
+        all_post = soup.select("#container > section.left_content > article:nth-child(3) > div.gall_listwrap.list > table > tbody > tr")
+
+        all_post_title = [
+            post.select_one("td a").get_text(strip=True)
+            for post in all_post
+        ]
+
+        for idx,post_title in enumerate(all_post_title, start=1):
+            print(f"{idx}번 글: {post_title}\n")
+
+        #container > section.left_content > article:nth-child(3) > div.gall_listwrap.list > table > tbody > tr:nth-child(8)
+
+        with open(file_path, "w", encoding='utf-8') as f:
+            for title in all_post_title:
+                f.write(title + "\n")
 
     else:
         save_login_session()
